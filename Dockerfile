@@ -34,3 +34,6 @@ EXPOSE 9093
 
 WORKDIR /root/app/
 # CMD ["python", "/app/index.py"]
+
+CMD ["python", "init.py"] #RENDER ONLY, this intializes the database
+CMD ["python", "app.py"] #RENDER ONLY, starts webpage
