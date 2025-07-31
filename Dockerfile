@@ -33,7 +33,10 @@ COPY odbcinst.ini /ODBCCONFIG
 EXPOSE 9093
 
 WORKDIR /root/app/
-# CMD ["python", "/app/index.py"]
-COPY app/ .  #RENDER ONLY, copies app folder into the container
-CMD ["python", "init.py"] #RENDER ONLY, this intializes the database
-CMD ["python", "app.py"] #RENDER ONLY, starts webpage
+
+
+# Copy app directory into the container
+COPY app/ .
+
+# Run DB initialization then start the app
+CMD ["sh", "-c", "python init.py && python app.py"]
