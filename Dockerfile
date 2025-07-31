@@ -34,6 +34,6 @@ EXPOSE 9093
 
 WORKDIR /root/app/
 # CMD ["python", "/app/index.py"]
-
+COPY app/ .  #RENDER ONLY, copies app folder into the container
 CMD ["python", "init.py"] #RENDER ONLY, this intializes the database
 CMD ["python", "app.py"] #RENDER ONLY, starts webpage
