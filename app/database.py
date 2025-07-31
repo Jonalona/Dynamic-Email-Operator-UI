@@ -31,8 +31,8 @@ class DynamicRecipientDB():
             return [row._mapping for row in result]
     
     #adds a recipient into the 'email_recipients' table
-    def add_recipient(self, recipient_dict:dict):
-        """Adds a new recipient."""
+    def add_recipient(self, recipient_dict: dict):
+        """Adds a new recipient if it doesn't already exist."""
         dag_id = recipient_dict["dag_id"]
         user_id = recipient_dict["user_id"]
         task_id = recipient_dict.get("task_id") or "DEFAULT"
@@ -40,14 +40,82 @@ class DynamicRecipientDB():
         bcc = recipient_dict.get("bcc") or 0
         to_ = recipient_dict.get("to_") or 0
         flag_id = recipient_dict.get("flag_id") or "DEFAULT"
-       
+
         with self.engine.connect() as connected:
-            connected.execute(
-                text("INSERT INTO email_recipients (user_id, dag_id, task_id, flag_id, cc, bcc, to_) VALUES (:user_id, :dag_id, :task_id, :flag_id, :cc, :bcc, :to_)"),
-                {"dag_id": dag_id, "task_id":task_id, "flag_id":flag_id, "cc":cc, "bcc":bcc, "to_":to_, "user_id":user_id}
+            # Check if the recipient already exists for the same dag/task/flag
+            existing = connected.execute(
+                text("""
+                    SELECT COUNT(1)
+                    FROM email_recipients
+                    WHERE user_id = :user_id
+                    AND dag_id = :dag_id
+                    AND task_id = :task_id
+                    AND flag_id = :flag_id
+                """),
+                {"user_id": user_id, "dag_id": dag_id, "task_id": task_id, "flag_id": flag_id}
+            ).scalar()
+
+            if existing == 0:  # Only insert if no existing entry
+                connected.execute(
+                    text("""
+                        INSERT INTO email_recipients
+                        (user_id, dag_id, task_id, flag_id, cc, bcc, to_)
+                        VALUES (:user_id, :dag_id, :task_id, :flag_id, :cc, :bcc, :to_)
+                    """),
+                    {
+                        "user_id": user_id, "dag_id": dag_id, "task_id": task_id,
+                        "flag_id": flag_id, "cc": cc, "bcc": bcc, "to_": to_
+                    }
+                )
+                connected.commit()
+                return True
+
+            return False
+
+    def delete_recipient(self, email: str, dag_id: str, task_id: str, flag_id: str = "DEFAULT") -> bool:
+        """
+        Deletes a recipient from the email_recipients table based on the user's email,
+        dag_id, task_id, and (optional) flag_id.
+
+        Returns:
+            True if a row was deleted, False otherwise.
+        """
+        with self.engine.connect() as conn:
+            # Normalize the email
+            email = email.lower()
+
+            # Step 1: Find the user_id for this email
+            user_row = conn.execute(
+                text("SELECT user_id FROM users WHERE email = :email"),
+                {"email": email}
+            ).fetchone()
+
+            if not user_row:
+                # No user found with that email
+                return False
+
+            user_id = user_row.user_id
+
+            # Step 2: Delete the recipient entry
+            result = conn.execute(
+                text("""
+                    DELETE FROM email_recipients
+                    WHERE user_id = :user_id
+                    AND dag_id = :dag_id
+                    AND task_id = :task_id
+                    AND flag_id = :flag_id
+                """),
+                {
+                    "user_id": user_id,
+                    "dag_id": dag_id,
+                    "task_id": task_id,
+                    "flag_id": flag_id
+                }
             )
-            connected.commit()
-    
+
+            conn.commit()
+            return result.rowcount > 0
+
    
     def add_user(self, user_dict):
         """
@@ -59,11 +127,14 @@ class DynamicRecipientDB():
         if user_dict.get("name") == None:
             user_dict["name"] = "NONE"
 
+        #make email lowercase
+        user_dict["email"] = user_dict["email"].lower()
+
         with self.engine.connect() as conn:
             # 1) Check email first (highest precedence)
             email_exists = conn.execute(
                 text("SELECT COUNT(1) FROM users WHERE email = :email"),
-                {"email": user_dict["email"]}
+                {"email": user_dict["email"].lower()}
             ).scalar() > 0
 
             if email_exists:
@@ -118,10 +189,11 @@ class DynamicRecipientDB():
         """
         Returns True if a user exists with the given email, False otherwise.
         """
+
         with self.engine.connect() as conn:
             email_exists = conn.execute(
                 text("SELECT COUNT(1) FROM users WHERE email = :email"),
-                {"email": email}
+                {"email": email.lower()}
             ).scalar() > 0
 
         return email_exists
@@ -220,7 +292,7 @@ class DynamicRecipientDB():
 
         with self.engine.connect() as conn:
             for email_dict in emails:
-                email = email_dict["email"]
+                email = email_dict["email"].lower()
                 task_id = email_dict["task_id"]
                 flag_id = email_dict.get("flag_id", "DEFAULT")
                 dag_id = email_dict["dag_id"]
