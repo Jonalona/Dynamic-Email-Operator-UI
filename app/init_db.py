@@ -47,88 +47,449 @@ if(True):
 
 
     recipients_to_add = [
-        {
-            "user_id":0,
-            "dag_id": "DAG ID 0",
-            "task_id":"task id a",
-            "flag_id":"DEFAULT",
-            "cc": False,
-            "bcc": False,
-            "to_": True  
-        },
-        {
-            "user_id":1,
-            "dag_id": "daily_sales_report",
-            "task_id":"task id b",
-            "flag_id":"failure",
-            "cc": True, 
-            "bcc": False,
-            "to_": False
-        },
-        {
-            "user_id":2,
-            "dag_id": "weekly_marketing_update",
-            "task_id":"task id c",
-            "cc": False,
-            "bcc": False,
-            "to_": True
-        },
-        {
-            "user_id":3,
-            "dag_id": "BCG_Split",
-            "task_id":"bcg_split_start",
-            "flag_id": "DEFAULT",
-            "cc": False,
-            "bcc": True, 
-            "to_": False
-        },
-        {
-            "user_id":2,
-            "dag_id": "BCG_Split",
-            "task_id":"bcg_split_start",
-            "flag_id": "DEFAULT",
-            "cc": True,
-            "bcc": True, 
-            "to_": True
-        },
-        {
-            "user_id":2,
-            "dag_id": "BCG_Split",
-            "task_id":"count_generator",
-            "flag_id": "DEFAULT",
-            "cc": False,
-            "bcc": True, 
-            "to_": False
-        }
+    # ── existing entries ────────────────────────────────────────────────────────
+    {
+        "user_id": 0,
+        "dag_id": "DAG ID 0",
+        "task_id": "task id a",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": False,
+        "to_": True
+    },
+    {
+        "user_id": 1,
+        "dag_id": "daily_sales_report",
+        "task_id": "task id b",
+        "flag_id": "failure",
+        "cc": True,
+        "bcc": False,
+        "to_": False
+    },
+    {
+        "user_id": 2,
+        "dag_id": "weekly_marketing_update",
+        "task_id": "task id c",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": False,
+        "to_": True
+    },
+    {
+        "user_id": 3,
+        "dag_id": "BCG_Split",
+        "task_id": "bcg_split_start",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": True,
+        "to_": False
+    },
+    {
+        "user_id": 2,
+        "dag_id": "BCG_Split",
+        "task_id": "bcg_split_start",
+        "flag_id": "DEFAULT",
+        "cc": True,
+        "bcc": True,
+        "to_": True
+    },
+    {
+        "user_id": 2,
+        "dag_id": "BCG_Split",
+        "task_id": "count_generator",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": True,
+        "to_": False
+    },
+    {
+        "user_id": 11,
+        "dag_id": "115_Daily_Performance_Email",
+        "task_id": "email_prep",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": False,
+        "to_": True
+    },
+    {
+        "user_id": 5,
+        "dag_id": "407_Daily_Performance_Email",
+        "task_id": "data_pull",
+        "flag_id": "DEFAULT",
+        "cc": True,
+        "bcc": False,
+        "to_": False
+    },
+    {
+        "user_id": 5,
+        "dag_id": "407_Daily_Performance_Email",
+        "task_id": "email_prep",
+        "flag_id": "failure",
+        "cc": False,
+        "bcc": True,
+        "to_": False
+    },
+    {
+        "user_id": 6,
+        "dag_id": "499_outbound_optimization_V2",
+        "task_id": "prepare_email",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": False,
+        "to_": True
+    },
+    {
+        "user_id": 6,
+        "dag_id": "BCG_Split",
+        "task_id": "success_emailer",
+        "flag_id": "DEFAULT",
+        "cc": True,
+        "bcc": False,
+        "to_": False
+    },
+
+    # ── 15 new recipient entries ────────────────────────────────────────────────
+    {
+        "user_id": 8,
+        "dag_id": "436_Daily_Performance_Email",
+        "task_id": "data_pull",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": False,
+        "to_": True
+    },
+    {
+        "user_id": 8,
+        "dag_id": "436_Daily_Performance_Email",
+        "task_id": "email_prep",
+        "flag_id": "failure",
+        "cc": False,
+        "bcc": True,
+        "to_": False
+    },
+    {
+        "user_id": 11,
+        "dag_id": "115_outbound_optimization_V2",
+        "task_id": "pull_and_process",
+        "flag_id": "DEFAULT",
+        "cc": True,
+        "bcc": False,
+        "to_": False
+    },
+    {
+        "user_id": 9,
+        "dag_id": "115_outbound_optimization_V2",
+        "task_id": "prepare_email",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": False,
+        "to_": True
+    },
+    {
+        "user_id": 10,
+        "dag_id": "499_Daily_Performance_Email",
+        "task_id": "data_pull",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": False,
+        "to_": True
+    },
+    {
+        "user_id": 10,
+        "dag_id": "499_Daily_Performance_Email",
+        "task_id": "email_prep",
+        "flag_id": "failure",
+        "cc": True,
+        "bcc": False,
+        "to_": False
+    },
+    {
+        "user_id": 11,
+        "dag_id": "712_Daily_Performance_Email",
+        "task_id": "data_pull",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": False,
+        "to_": True
+    },
+    {
+        "user_id": 11,
+        "dag_id": "712_Daily_Performance_Email",
+        "task_id": "email_prep",
+        "flag_id": "DEFAULT",
+        "cc": True,
+        "bcc": True,
+        "to_": False
+    },
+    {
+        "user_id": 12,
+        "dag_id": "BCG_Split",
+        "task_id": "split_all_files",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": True,
+        "to_": False
+    },
+    {
+        "user_id": 12,
+        "dag_id": "BCG_Split",
+        "task_id": "remove_og_files",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": False,
+        "to_": True
+    },
+    {
+        "user_id": 4,
+        "dag_id": "499_outbound_optimization_V2",
+        "task_id": "prepare_email",
+        "flag_id": "success",
+        "cc": True,
+        "bcc": False,
+        "to_": False
+    },
+    {
+        "user_id": 7,
+        "dag_id": "407_Daily_Performance_Email",
+        "task_id": "email_prep",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": True,
+        "to_": False
+    },
+    {
+        "user_id": 1,
+        "dag_id": "712_Daily_Performance_Email",
+        "task_id": "email_prep",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": False,
+        "to_": True
+    },
+    {
+        "user_id": 3,
+        "dag_id": "115_Daily_Performance_Email",
+        "task_id": "data_pull",
+        "flag_id": "failure",
+        "cc": True,
+        "bcc": False,
+        "to_": False
+    },
+    {
+        "user_id": 2,
+        "dag_id": "115_outbound_optimization_V2",
+        "task_id": "prepare_email",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": True,
+        "to_": False
+    },
+    {
+        "user_id": 0,
+        "dag_id": "115_Daily_Performance_Email",
+        "task_id": "data_pull",
+        "flag_id": "DEFAULT",
+        "cc": True,
+        "bcc": False,
+        "to_": False
+    },
+    {
+        "user_id": 1,
+        "dag_id": "115_Daily_Performance_Email",
+        "task_id": "email_prep",
+        "flag_id": "success",
+        "cc": False,
+        "bcc": True,
+        "to_": False
+    },
+    {
+        "user_id": 2,
+        "dag_id": "115_outbound_optimization_V2",
+        "task_id": "pull_and_process",
+        "flag_id": "failure",
+        "cc": False,
+        "bcc": False,
+        "to_": True
+    },
+    {
+        "user_id": 3,
+        "dag_id": "115_outbound_optimization_V2",
+        "task_id": "prepare_email",
+        "flag_id": "DEFAULT",
+        "cc": True,
+        "bcc": False,
+        "to_": True
+    },
+    {
+        "user_id": 4,
+        "dag_id": "407_Daily_Performance_Email",
+        "task_id": "email_prep",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": True,
+        "to_": False
+    },
+    {
+        "user_id": 5,
+        "dag_id": "436_Daily_Performance_Email",
+        "task_id": "data_pull",
+        "flag_id": "failure",
+        "cc": True,
+        "bcc": True,
+        "to_": False
+    },
+    {
+        "user_id": 6,
+        "dag_id": "436_Daily_Performance_Email",
+        "task_id": "email_prep",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": False,
+        "to_": True
+    },
+    {
+        "user_id": 7,
+        "dag_id": "499_Daily_Performance_Email",
+        "task_id": "data_pull",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": False,
+        "to_": True
+    },
+    {
+        "user_id": 8,
+        "dag_id": "499_Daily_Performance_Email",
+        "task_id": "email_prep",
+        "flag_id": "failure",
+        "cc": True,
+        "bcc": False,
+        "to_": False
+    },
+    {
+        "user_id": 9,
+        "dag_id": "499_outbound_optimization_V2",
+        "task_id": "pull_and_process",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": True,
+        "to_": True
+    },
+    {
+        "user_id": 10,
+        "dag_id": "499_outbound_optimization_V2",
+        "task_id": "prepare_email",
+        "flag_id": "success",
+        "cc": True,
+        "bcc": False,
+        "to_": False
+    },
+    {
+        "user_id": 11,
+        "dag_id": "712_Daily_Performance_Email",
+        "task_id": "data_pull",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": False,
+        "to_": True
+    },
+    {
+        "user_id": 12,
+        "dag_id": "712_Daily_Performance_Email",
+        "task_id": "email_prep",
+        "flag_id": "DEFAULT",
+        "cc": True,
+        "bcc": True,
+        "to_": False
+    },
+    {
+        "user_id": 0,
+        "dag_id": "BCG_Split",
+        "task_id": "split_all_files",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": True,
+        "to_": False
+    },
+    {
+        "user_id": 1,
+        "dag_id": "BCG_Split",
+        "task_id": "compressor",
+        "flag_id": "DEFAULT",
+        "cc": True,
+        "bcc": False,
+        "to_": False
+    }
+
     ]
 
     users_to_add = [
-        {
-            "user_id":0,
-            "name":"Jonah Reisner",
-            "email":"jreisner@jetrord.com"
-        },
-            {
-            "user_id":1,
-            "name":"Aniket",
-            "email":"aniket@aniket.com"
-        },
-            {
-            "user_id":2,
-            "name":"Usama Saifi",
-            "email":"saifi@genericEmail.com"
-        },
-            {
-            "user_id":3,
-            "name":"Nishit",
-            "email":"nishitjain@gmail.com"
-        },
-            {
-            "user_id":4,
-            "name":"Dr. Jie",
-            "email":"doctorJie@gmail.com"
-        },
-    ]
+    # ── existing users ──────────────────────────────────────────────────────────
+    {
+    "user_id": 0,
+    "name": "Jon Snow",
+    "email": "jonsnow@winterfell.com"
+    },
+    {
+        "user_id": 1,
+        "name": "Daenerys Targaryen",
+        "email": "daenerys@dragonstone.com"
+    },
+    {
+        "user_id": 2,
+        "name": "Tyrion Lannister",
+        "email": "tyrion@casterlyrock.com"
+    },
+    {
+        "user_id": 3,
+        "name": "Arya Stark",
+        "email": "arya@winterfell.com"
+    },
+    {
+        "user_id": 4,
+        "name": "Cersei Lannister",
+        "email": "cersei@kingslanding.com"
+    },
+    {
+        "user_id": 5,
+        "name": "Sansa Stark",
+        "email": "sansa@winterfell.com"
+    },
+    {
+        "user_id": 6,
+        "name": "Jaime Lannister",
+        "email": "jaime@casterlyrock.com"
+    },
+    {
+        "user_id": 7,
+        "name": "Bran Stark",
+        "email": "bran@winterfell.com"
+    },
+    {
+        "user_id": 8,
+        "name": "Brienne of Tarth",
+        "email": "brienne@tarth.com"
+    },
+    {
+        "user_id": 9,
+        "name": "Jorah Mormont",
+        "email": "jorah@mormont.com"
+    },
+    {
+        "user_id": 10,
+        "name": "Samwell Tarly",
+        "email": "samwell@oldtown.com"
+    },
+    {
+        "user_id": 11,
+        "name": "Theon Greyjoy",
+        "email": "theon@i\u0335r\u0335o\u0335n\u0335i\u0335s\u0335l\u0335a\u0335n\u0335d\u0335s\u0335winterfell.com"
+    },
+    {
+        "user_id": 12,
+        "name": "Melisandre",
+        "email": "melisandre@redtemple.com"
+    }
+]
 
     for recip in recipients_to_add:
         rdDB.add_recipient(recipient_dict=recip)
