@@ -39,4 +39,4 @@ WORKDIR /root/app/
 COPY app/ .
 
 # Run DB initialization then start the app
-CMD ["sh", "-c", "python init.py && python app.py"]
+CMD ["sh", "-c", "python init_db.py && python app.py"]
