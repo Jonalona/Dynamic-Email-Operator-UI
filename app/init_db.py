@@ -10,7 +10,7 @@ rdDB = DynamicRecipientDB()
 
 
 #resets the db to hard coded entries
-if(False):
+if(True):
     # The SQL command to create the table
     # "IF NOT EXISTS" prevents errors if you run this script multiple times
     CLEAR_DB_SQL = "DROP TABLE IF EXISTS email_recipients;"
