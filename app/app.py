@@ -3,7 +3,6 @@ from dash import Dash, html, dcc, Input, Output
 import dash_bootstrap_components as dbc
 from database import DynamicRecipientDB
 import dash_mantine_components as dmc
-import os #RENDER ONLY
 
 #http://localhost:8887/
 app = Dash(__name__, use_pages=True, suppress_callback_exceptions=True)
@@ -19,22 +18,21 @@ dark_theme_shadows = {
 # Define the master layout for the entire app.
 # The key is to wrap everything in a dmc.MantineProvider.
 app.layout = dmc.MantineProvider(
-    # theme={
-    #     "shadows": dark_theme_shadows,  # <-- Add the custom shadows here
-    #     "components": {
-    #          "Paper": {"styles": {"root": {"backgroundColor": "#EBF0F0B2"}}} # Optional: make paper slightly lighter
-    #     }
-    # },
-    # forceColorScheme="dark",
+
     children=[
         # This container will wrap all of your pages and ensure
         # they have a full-width area to render in.
-        dmc.Container(
-            size="fluid",
-            p=0, 
+         html.Div(
+            style={
+                "minHeight": "100vh",   # full screen (slightly taller than viewport)
+                "display": "flex",
+                "flexDirection": "column",
+                 "overflow": "hidden" ,
+                "width": "100%",        # ensure full width
+                "padding": 0            # replaces Mantine's p=0
+            },
             children=[
-                # The content of your pages (e.g., from home.py) will be rendered here.
-                dash.page_container,
+                dash.page_container     # where your pages render
             ]
         ),
 
@@ -50,13 +48,10 @@ app.layout = dmc.MantineProvider(
 
 
 #http://localhost:8887/
-# if __name__ == '__main__':
-#     app.run(debug=True, port=8050, host='0.0.0.0',)
+if __name__ == '__main__':
+    app.run(debug=True, port=8050, host='0.0.0.0',)
 
-#Render specific only
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 9093))
-    app.run(host="0.0.0.0", port=port)
+
 
 
 
