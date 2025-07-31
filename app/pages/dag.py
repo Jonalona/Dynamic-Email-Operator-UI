@@ -3,28 +3,18 @@ from dash import html, dcc, callback, Input, Output, callback_context as ctx, St
 from shared_dash import recipient_DB
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
+from global_vars import *
 
 
-dag_JSON = {
-    "115_Daily_Performance_Email":["data_pull","email_prep"],
-    "115_outbound_optimization_V2":["pull_and_process","prepare_email"],
-    "407_Daily_Performance_Email":["data_pull","email_prep"],
-    "436_Daily_Performance_Email":["data_pull","email_prep"],
-    "499_Daily_Performance_Email":["data_pull","email_prep"],
-    "499_outbound_optimization_V2":["pull_and_process","prepare_email"],
-    "712_Daily_Performance_Email":["data_pull","email_prep"],
-    "BCG_Split":["bcg_split_start","remove_previous_upload","count_generator","split_all_files","compressor","uploader","remove_og_files","success_emailer"]
-}
 
 
-to_bg_color = '#0d6efd'
-cc_bg_color = "#00695C"
-bcc_bg_color = "#A695B6"
-no_bg_color = "rgba(37, 150, 190,0.1)"
-# The <dag_id> part is a placeholder that will capture the
-# value from the URL (e.g., "California" from "/dags/California").
+
 dash.register_page(__name__, path_template="/dags/<dag_id>")
 
+
+#▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
+######################    Layout    ###################################
+#▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
 
 # Define the layout as a FUNCTION.
 # Dash will automatically pass the value captured from the URL
@@ -147,16 +137,32 @@ def layout(dag_id=None):
         id="all_tasks_stack"
     )
 
-    options_group = dmc.Group(
+    sendtype_stack = dmc.Stack(
         [
+            dmc.Text(
+                "Select Send Type",        # ✅ Title
+                size="sm",                 # Small chic text
+                fw=500,      # Semi-bold
+                c="black",            # Subtle color
+                style={"textAlign": "center", "marginBottom": "0px"}  # ✅ Center + flush
+            ),
             dmc.ButtonGroup(
                 [
-                    dmc.Button("To",id={"button_type":"send_type","index":"to_"},color=to_bg_color),
-                    dmc.Button("CC",id={"button_type":"send_type","index":"cc"},color=cc_bg_color),
-                    dmc.Button("BCc",id={"button_type":"send_type","index":"bcc"},color=bcc_bg_color)
-                ]
+                    dmc.Button("To",id={"button_type":"send_type","index":"to_"},color=to_bg_color, 
+                               className="glow-button", style={"--glow-color": str(to_bg_color)}, 
+                               size="lg", fullWidth=True),
+                    dmc.Button("CC",id={"button_type":"send_type","index":"cc"},color=cc_bg_color, 
+                        className="glow-button", style={"--glow-color": str(cc_bg_color)}, 
+                        size="lg", fullWidth=True),
+                    dmc.Button("BCc",id={"button_type":"send_type","index":"bcc"},color=bcc_bg_color, 
+                               className="glow-button", style={"--glow-color": str(bcc_bg_color)}, 
+                               size="lg", fullWidth=True)
+                ],
+                style={"width": "100%"}
             )
-        ]
+        ],
+        gap=1,                     # Minimal gap between title and buttons
+        style={"width": "100%", "alignItems": "center"}  # ✅ Center contents
     )
 
     add_recipients_button = dmc.Button(
@@ -164,13 +170,25 @@ def layout(dag_id=None):
         id="add-recipients-button",
         variant="gradient",
         gradient={"from": "teal", "to": "lime", "deg": 105},
-        className="glow-button"
+        className="glow-button",
+        size="lg"
+    )
+
+    delete_recipients_button = dmc.Button(
+        "Delete Recipients",
+        id="delete-recipients-button",
+        variant="gradient",
+        gradient={"from": "red", "to": "pink", "deg": 105},
+        className="glow-button",
+        style={"--glow-color": "red"},
+        size="lg"
     )
 
     side_buttons_stack = dmc.Stack(
         [
-            options_group,
-            add_recipients_button
+            sendtype_stack,
+            add_recipients_button,
+            delete_recipients_button
         ],
         id="side-buttons-stack"
     )
@@ -180,24 +198,30 @@ def layout(dag_id=None):
     return dmc.Container(
         [
             add_recipients_modal,
-            dcc.Store(id="send_type_store", storage_type="memory",data=None),
+            dcc.Store(id="bg-type-store", storage_type="memory",data=None),
             dmc.Stack([
                 dmc.Title(f"Details for DAG: {dag_id}", order=1),
                 dmc.Divider(),
                 dmc.Grid(
                     [
-                        dmc.GridCol(all_tasks_stack, span=90),
-                        dmc.GridCol(side_buttons_stack, span=10)
+                        dmc.GridCol(all_tasks_stack, span=85,style={"height": "100%"}),
+                        dmc.GridCol(side_buttons_stack, span=15,style={"height": "100%"})
                     ],
-                    columns=100
+                    columns=100,
+                    style={"flex": 1, "height": "100%"}
                 )
             ])
         ],
         size="fluid",
         bg="var(--mantine-color-blue-light)",
-        style={"minHeight": "100vh"},
-        id="main_container_dag"
+        style={"height": "100vh","flex":1   },
+        id="main_container_dag",
     )
+
+
+#▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+######################    Layout    ###################################
+#▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
 
 #returns color corresponding to (to_cc_bcc) attributes of recipient 
@@ -249,27 +273,36 @@ def populate_task_container(dag_id):
     for task_id in dag_JSON[dag_id]:
         recipient_dicts = recipients_from_dag_task_ids(dag_id, task_id)
 
-
-        email_buttons = [
-            dmc.Button(
-                recipient["email"],
-                id={"type": "sub_task_email", "user_id": recipient["user_id"], "dag_id":dag_id, "task_id":task_id, "flag_id":recipient["flag_id"]},
-                variant="filled", # Ensures the background color is solid
-                size="lg",        # A good, readable size
-                radius="xl",      # Makes it pill-shaped
-                # The style prop allows for custom CSS like our gradient
-                style={"background": recip_color_from_sendType_dict({"to_":recipient["to_"], "bcc":recipient["bcc"], "cc":recipient["cc"]})},
-                className = "glow-button" #expands and glows on hover
-            )
-            for recipient in recipient_dicts
-        ]
+        
+        email_buttons = []
+        for recipient in recipient_dicts:
+  
+                button = dmc.Button(
+                    recipient["email"],
+                    id={"type": "sub_task_email", "user_id": recipient["user_id"], "dag_id":dag_id, "task_id":task_id, "flag_id":recipient["flag_id"]},
+                    variant="filled", # Ensures the background color is solid
+                    size="lg",        # A good, readable size
+                    radius="xl",      # Makes it pill-shaped
+                    # The style prop allows for custom CSS like our gradient
+                    style={"background": recip_color_from_sendType_dict({"to_":recipient["to_"], "bcc":recipient["bcc"], "cc":recipient["cc"]})},
+                    className = "glow-button" #expands and glows on hover
+                )
+                store = dcc.Store(id={"store-type":"delete-email",
+                                "task_id":task_id,
+                                    "user_id": recipient["user_id"],
+                                    "dag_id": dag_id,
+                                    "flag_id": recipient["flag_id"]}, 
+                                    data=None)
+            
+                email_buttons.append(button)
+                email_buttons.append(store)
 
         # Use dmc.Paper as a container for each task section
         task_block = dmc.Paper(
             children=[
                 dmc.Title(task_id, order=3),
                 # dmc.Group is a flex container, perfect for arranging the buttons
-                dmc.Group(email_buttons, mt="sm"),
+                dmc.Group(email_buttons, mt="sm", id={"type":"group-email-buttons", "task_id":task_id, "dag_id":dag_id})
             ],
             withBorder=True,
             shadow="xl",
@@ -278,7 +311,7 @@ def populate_task_container(dag_id):
             style={
                 "backgroundColor": "#EBF0F0B2", # Dark gray at 80% opacity
                 "boxShadow": "0px 3px 8px 0px rgba(0, 0, 0, 0.25)"
-            }
+            },
         )
         task_papers.append(task_block)
 
@@ -289,65 +322,135 @@ def populate_task_container(dag_id):
 
 @callback(
     Output('main_container_dag', 'bg'),
-    Output('send_type_store','data'),
+    Output('bg-type-store','data'),
     Input({"button_type":"send_type","index":dash.ALL},"n_clicks"),
+    Input("delete-recipients-button", "n_clicks"),
     State('main_container_dag',"bg"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
+    allow_duplicate=True
 )
-def handle_click_event(n_clicks, current_bg):
+def handle_options_click_event(n_clicks, n_clicks_delete, current_bg):
     button_id = ctx.triggered_id
     bg_color = None
     clicked=None
-    if button_id["index"] == "to_":
-        bg_color = to_bg_color
-        clicked = "to_"
-    if button_id["index"] == "cc":
-        bg_color = cc_bg_color
-        clicked = "cc"
-    if button_id["index"] == "bcc":
-        bg_color = bcc_bg_color
-        clicked = "bcc"
+    if isinstance(button_id, dict):
+        if button_id["index"] == "to_":
+            bg_color = to_bg_color
+            clicked = "to_"
+        if button_id["index"] == "cc":
+            bg_color = cc_bg_color
+            clicked = "cc"
+        if button_id["index"] == "bcc":
+            bg_color = bcc_bg_color
+            clicked = "bcc"
+    elif isinstance(button_id, str):
+        if button_id == "delete-recipients-button":
+            bg_color = delete_bg_color
+            clicked = "delete"
     if (current_bg == to_bg_color and clicked == "to_" or
             current_bg == cc_bg_color and clicked == "cc" or
-            current_bg == bcc_bg_color and clicked == "bcc"):
+            current_bg == bcc_bg_color and clicked == "bcc" or
+            current_bg == delete_bg_color and clicked == "delete"):
         bg_color = no_bg_color
     return bg_color, clicked
 
 @callback(
     Output({"type": "sub_task_email", "user_id": dash.MATCH, "dag_id":dash.MATCH,"task_id":dash.MATCH, "flag_id":dash.MATCH}, 'style'),
-    State("send_type_store",'data'),
+    Output({"store-type":"delete-email","task_id":dash.MATCH, "user_id": dash.MATCH, "dag_id":dash.MATCH, "flag_id":dash.MATCH}, "data"), #DONOW
+    State("bg-type-store",'data'),
     Input({"type": "sub_task_email", "user_id": dash.MATCH, "dag_id":dash.MATCH,"task_id":dash.MATCH, "flag_id":dash.MATCH}, "n_clicks"),
+    Input({"type": "sub_task_email", "user_id": dash.MATCH, "dag_id":dash.MATCH,"task_id":dash.MATCH, "flag_id":dash.MATCH}, "children"),
     prevent_initial_call=True
 )
-def handle_email_button_click(send_type, n_clicks):
+def handle_email_button_click(bg_type, n_clicks, button_label_email):
+    print("EMAIL CLICKED")
     button_id = ctx.triggered_id
-    if button_id is None or send_type is None:
+    if button_id is None or bg_type is None:
         print("handle_email_button_click MISFIRE")
+        return no_update, None
+    
+    send_types = ["to_", "bcc", "cc"]
+    if bg_type in send_types:
+        id_dict = {"dag_id":button_id["dag_id"], "task_id":button_id["task_id"], "flag_id":button_id.get("flag_id","DEFAULT"), "user_id":button_id["user_id"]}
+        recipient_DB.update_recipient_send_type(id_dict, bg_type)
+        new_email_color = recip_color_from_id_dict(id_dict)
+        
+        return {"background": new_email_color}, None
+    
+    if bg_type == "delete":
+        print("DELETE DETECTED")
+        return no_update, {"email":button_label_email, "dag_id":button_id["dag_id"], "task_id":button_id["task_id"], "flag_id":button_id.get("flag_id","DEFAULT"), "user_id":button_id["user_id"]}
+
+
+
+    
+@callback(
+        Output({"type":"group-email-buttons", "task_id":dash.MATCH, "dag_id":dash.MATCH}, "children"),
+        Input({"store-type":"delete-email","task_id":dash.MATCH, "user_id": dash.ALL, "dag_id":dash.MATCH, "flag_id":dash.ALL}, "data"),
+        State({"type":"group-email-buttons", "task_id":dash.MATCH, "dag_id":dash.MATCH}, "children"),
+        prevent_initial_call = True
+)
+def delete_email_store_triggered(datas, current_task_email_buttons):
+
+    print("GOT TO EMAIL DELETE SECTION")
+    triggered_id = ctx.triggered_id
+    delete_email_id = None #need to set this to the corresponding value in datas
+    # ctx.inputs_list is a nested list of dicts with IDs and their properties
+    for i, data in enumerate(datas):
+        id_dict = ctx.inputs_list[0][i]["id"]  # the ID for this data
+        print("Data:", data, " came from ID:", id_dict)
+        if data is not None and all(data[k] == triggered_id[k] for k in ["dag_id","task_id"]):
+            delete_email_id = data
+            break
+    
+    #the store might've been updated with None, in which case ALL the stores will also be non
+    #no delete is called for
+    if delete_email_id is None:
         return no_update
-    id_dict = {"dag_id":button_id["dag_id"], "task_id":button_id["task_id"], "flag_id":button_id.get("flag_id","DEFAULT"), "user_id":button_id["user_id"]}
-    recipient_DB.update_recipient_send_type(id_dict, send_type)
-    new_email_color = recip_color_from_id_dict(id_dict)
     
-    return {"background": new_email_color}
+    #otherwise, a delete is neccesarily in order
+    email = delete_email_id["email"]
+    dag_id = delete_email_id["dag_id"]
+    task_id = delete_email_id["task_id"]
+    flag_id = delete_email_id.get("flag_id", "DEFAULT")
+    recipient_DB.delete_recipient(email, dag_id, task_id, flag_id)
 
-    
+    new_children = []
+    for email_button in current_task_email_buttons:
+        #email_button SHOULD be dmc.Button component but just to make sure
+        if email_button.get("type") == "Button":  # Only Buttons
+            comp_id = email_button["props"]["id"]
+            print("Button ID:", comp_id)
+            if comp_id["user_id"] != delete_email_id["user_id"]:
+                new_children.append(email_button)
+        else:
+            new_children.append(email_button)
+    print("Triggered:", ctx.triggered_id)
+    return new_children
 
 
 
 
-
-
-#######################################################################
+#▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
 ######################Add Recipients###################################
-#######################################################################
+#▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
 @callback(
     Output("add-recipients-modal", "opened"),
+    Output("task-container", "children"),
     Input("add-recipients-button", "n_clicks"),
     State("add-recipients-modal", "opened"),
+    State("task-container", "children"),
+    State("current-dag-id_store", "data"),
     prevent_initial_call=True
 )
-def open_add_recipients_modal(n_clicks, current_modal_state):
-    return not current_modal_state #shows if hidden; hides if shown
+def open_add_recipients_modal(n_clicks, current_modal_state, main_children, dag_id):
+    #if add recipients modal is currently open, that means it is about to be closed.
+    #Therefore, want want to update the shown email recipients on the main page. 
+    #Otherwise, if just opening the add recipients modal, no update is needed.
+    if current_modal_state:
+        main_children = populate_task_container(dag_id)
+    #shows add recipient modal if hidden; hides if shown
+    return not current_modal_state, main_children 
 
     
 
@@ -585,3 +688,23 @@ def submit_new_recipients(n_clicks, inputemails_text, to_variant, cc_variant, bc
 
     #this return will trigger add recipients modal to close
     return n_clicks + 1
+
+
+
+
+#▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+######################     Add Recipients     ###################################
+#▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
+
+
+
+
+
+
+
+
+
+
+
+
