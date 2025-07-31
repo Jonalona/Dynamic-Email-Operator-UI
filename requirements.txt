@@ -1,0 +1,25 @@
+numpy
+pandas
+dash
+pyodbc
+openpyxl
+ipykernel
+black
+multiprocess
+psutil
+lxml
+notebook
+matplotlib
+jupyter
+scikit-learn
+lark
+openai
+ipykernel
+datetime
+holidays
+sqlalchemy
+dash_mantine_components
+dash_bootstrap_components
+dash_iconify
+#airflow==1.10.15
+#pip install apache-airflow==1.10.15 --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-1.10.15/constraints-3.7.txt"

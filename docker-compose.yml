@@ -1,0 +1,14 @@
+
+services:
+  app:
+    build: .
+    image: image_dash_email
+    container_name: container_dash_email
+    volumes:
+      - /mnt/c/Users/jreisner/Documents/Projects/Airflow_Email_Recipients:/workspace
+    working_dir: /workspace
+    command: ["sleep", "infinity"]  # Keeps the container alive for dev
+    env_file:
+      - /mnt/c/Users/jreisner/Documents/Projects/Airflow_Email_Recipients/.cred
+    ports:
+    - "8887:8050"
