@@ -15,7 +15,7 @@ def create_new_user_component():
         dmc.NotificationContainer(id="notification-container"),
         dcc.Store(id="new_user_button_close"),
         dmc.Button(
-            "Create New User",
+            "Create a New User",
             variant="outline",
             color="green",
             size="sm",
@@ -213,7 +213,7 @@ def create_view_users_button():
         [
             dcc.Store("store-delete-email"),
             dmc.Button(
-                "View/Delete Users",
+                "View/Delete All Users",
                 variant="outline",
                 color="grey",
                 size="sm",
@@ -427,20 +427,3 @@ def delete_user_confirmation(n_clicks, children, n_clicks2):
 )
 def reset_view_users_filter(opened):
     return None
-
-
-
-
-
-
-
-
-
-###############ENCODING/DECODING#########################
-import base64
-
-def encode_email(email):
-    return base64.urlsafe_b64encode(email.encode()).decode()
-
-def decode_email(encoded):
-    return base64.urlsafe_b64decode(encoded.encode()).decode()
