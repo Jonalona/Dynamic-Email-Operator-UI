@@ -9,8 +9,6 @@ from global_vars import *
 
 
 
-dash.register_page(__name__, path_template="/user/<email>")
-
 
 #▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
 ######################    Component Definitions    ####################
