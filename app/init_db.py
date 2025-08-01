@@ -77,7 +77,7 @@ if(True):
     },
     {
         "user_id": 3,
-        "dag_id": "Click Me!",
+        "dag_id": "Click_Me!",
         "task_id": "bcg_split_start",
         "flag_id": "DEFAULT",
         "cc": False,
@@ -86,7 +86,7 @@ if(True):
     },
     {
         "user_id": 2,
-        "dag_id": "Click Me!",
+        "dag_id": "Click_Me!",
         "task_id": "bcg_split_start",
         "flag_id": "DEFAULT",
         "cc": True,
@@ -95,7 +95,7 @@ if(True):
     },
     {
         "user_id": 2,
-        "dag_id": "Click Me!",
+        "dag_id": "Click_Me!",
         "task_id": "count_generator",
         "flag_id": "DEFAULT",
         "cc": False,
@@ -140,7 +140,7 @@ if(True):
     },
     {
         "user_id": 6,
-        "dag_id": "Click Me!",
+        "dag_id": "Click_Me!",
         "task_id": "success_emailer",
         "flag_id": "DEFAULT",
         "cc": True,
@@ -223,7 +223,7 @@ if(True):
     },
     {
         "user_id": 12,
-        "dag_id": "Click Me!",
+        "dag_id": "Click_Me!",
         "task_id": "split_all_files",
         "flag_id": "DEFAULT",
         "cc": False,
@@ -232,7 +232,7 @@ if(True):
     },
     {
         "user_id": 12,
-        "dag_id": "Click Me!",
+        "dag_id": "Click_Me!",
         "task_id": "remove_og_files",
         "flag_id": "DEFAULT",
         "cc": False,
@@ -403,7 +403,7 @@ if(True):
     },
     {
         "user_id": 0,
-        "dag_id": "Click Me!",
+        "dag_id": "Click_Me!",
         "task_id": "split_all_files",
         "flag_id": "DEFAULT",
         "cc": False,
@@ -412,7 +412,7 @@ if(True):
     },
     {
         "user_id": 1,
-        "dag_id": "Click Me!",
+        "dag_id": "Click_Me!",
         "task_id": "compressor",
         "flag_id": "DEFAULT",
         "cc": True,
