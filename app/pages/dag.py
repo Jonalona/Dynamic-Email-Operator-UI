@@ -35,13 +35,64 @@ def layout(dag_id=None):
                     )
                 ]
             )
-    
+    return show_emails_per_task_per_dag(dag_id, dag_tasks, None)
 
+def show_emails_per_task_per_dag(dag_id, dag_tasks, email_filter_str=None):
 
     """
     This function is called by Dash whenever a user navigates to a URL
     matching the path_template.
     """
+
+        
+    all_tasks_stack = dmc.Stack(
+        [
+        
+            # Example: A placeholder for a graph
+            dmc.ScrollArea(
+                p="md",    # Corresponds to padding: '10px'
+                style={"border": "1px solid #ccc"},  
+                id='task-container',
+                children=populate_task_container(dag_id, email_filter_str)
+            ),
+
+        ],
+        id="all_tasks_stack"
+    )
+
+
+    #if there's an email filter, we're showing a lot of these below containers.
+    #ids were not implemented with dynmaic calls in mind, so no selection/option features. Very simple only
+    if email_filter_str is not None:
+        return dmc.Container(
+            [
+                dmc.Title(f"Details for DAG: {dag_id}", order=1),
+                all_tasks_stack
+            ],
+            size="fluid",
+            bg="var(--mantine-color-blue-light)",
+            id="main_container_dag",
+        )
+    
+    all_tasks_stack = dmc.Stack(
+        [
+        
+            # Example: A placeholder for a graph
+            dmc.ScrollArea(
+                p="md",    # Corresponds to padding: '10px'
+                style={"border": "1px solid #ccc"},
+                h="82vh",  
+                id='task-container',
+                children=populate_task_container(dag_id, email_filter_str)
+            ),
+
+        ],
+        id="all_tasks_stack"
+    )
+
+  
+
+
     add_recipients_modal = dmc.Modal(
                 title="Add Recipients",
                 id="add-recipients-modal",
@@ -111,31 +162,7 @@ def layout(dag_id=None):
                 padding="xl"
             )
 
-    all_tasks_stack = dmc.Stack(
-        [
-        
-            # Example: A placeholder for a graph
-            dmc.ScrollArea(
-                h="75vh",  # Corresponds to height: '55vh'
-                p="md",    # Corresponds to padding: '10px'
-                style={"border": "1px solid #ccc"},
-                id='task-container',
-                children=populate_task_container(dag_id)
-            ),
-
-            # Link to go back home
-            dmc.Anchor(
-
-                href="/",
-                # dmc.Group is used to add an icon next to the text
-                children=dmc.Group([
-                    DashIconify(icon="feather:arrow-left"),
-                    "Go back to Home"
-                ])
-            )
-        ],
-        id="all_tasks_stack"
-    )
+    
 
     sendtype_stack = dmc.Stack(
         [
@@ -210,11 +237,22 @@ def layout(dag_id=None):
                     columns=100,
                     style={"flex": 1, "height": "100%"}
                 )
-            ])
+            ]),
+            
+            # Link to go back home
+            dmc.Anchor(
+
+                href="/",
+                # dmc.Group is used to add an icon next to the text
+                children=dmc.Group([
+                    DashIconify(icon="feather:arrow-left"),
+                    "Go back to Home"
+                ])
+            )
         ],
         size="fluid",
         bg="var(--mantine-color-blue-light)",
-        style={"height": "100vh","flex":1   },
+        style={"height": "100vh","flex":1   } if email_filter_str is None else {"height": "100%","flex":1   },
         id="main_container_dag",
     )
 
@@ -257,7 +295,7 @@ def recip_color_from_sendType_dict(sendType_dict:dict):
     return grad
 
 
-def populate_task_container(dag_id):
+def populate_task_container(dag_id, email_filter_str = None):
     def recipients_from_dag_task_ids(dag_id, task_id):
         user_dicts = recipient_DB.get_recipients_by_dag_task(dag_id, task_id)
         print([user["email"] for user in user_dicts])
@@ -276,7 +314,9 @@ def populate_task_container(dag_id):
         
         email_buttons = []
         for recipient in recipient_dicts:
-  
+                #if email_Filter is explicitly passed in then only add a recipient if it's email matches up with the filter
+                if email_filter_str is not None and recipient["email"] != email_filter_str:
+                    continue
                 button = dmc.Button(
                     recipient["email"],
                     id={"type": "sub_task_email", "user_id": recipient["user_id"], "dag_id":dag_id, "task_id":task_id, "flag_id":recipient["flag_id"]},
@@ -497,7 +537,6 @@ def toggle_task_checkbox(n_clicks, current_check_state):
 
 
 @callback(
-    #Output("add-emails-textarea", "error"),
     Output("email-badges-scrollarea","children"),
     Input("add-emails-textarea", "value"),
     prevent_initial_call=True
