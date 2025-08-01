@@ -3,6 +3,7 @@ from dash import html, dcc, callback, Input, Output
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
 from reusable_components import create_new_user_component, create_view_users_button
+from select_user import create_select_user_button, create_select_user_modal
 from global_vars import *
 # Assume ALL_DAGS is your list of DAG IDs
 
@@ -15,6 +16,8 @@ def layout():
         [
             create_new_user_component(),
             create_view_users_button(),
+            create_select_user_button(),
+            create_select_user_modal(),
             dmc.Paper(
                 # dmc.Stack provides clean vertical spacing between its children
                 dmc.Stack(
