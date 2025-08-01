@@ -50,7 +50,7 @@ app.layout = dmc.MantineProvider(
 
 #Render specific only
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 9093))
+    port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
 
 
