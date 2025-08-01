@@ -12,7 +12,7 @@ dag_JSON = {
     "499_Daily_Performance_Email":["data_pull","email_prep"],
     "499_outbound_optimization_V2":["pull_and_process","prepare_email"],
     "712_Daily_Performance_Email":["data_pull","email_prep"],
-    "Click Me!":["bcg_split_start","remove_previous_upload","count_generator","split_all_files","compressor","uploader","remove_og_files","success_emailer"]
+    "Click_Me!":["bcg_split_start","remove_previous_upload","count_generator","split_all_files","compressor","uploader","remove_og_files","success_emailer"]
 }
 
 
