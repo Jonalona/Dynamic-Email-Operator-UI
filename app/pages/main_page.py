@@ -1,7 +1,7 @@
 import dash
 from dash import html, dcc, callback, Input, Output
 import dash_mantine_components as dmc
-from reusable_components import create_new_user_component, create_view_users_button
+from reusable_components import create_new_user_component, create_view_users_button, create_readme_button
 from select_user import create_select_user_button, create_select_user_modal
 from global_vars import *
 # Assume ALL_DAGS is your list of DAG IDs
@@ -12,11 +12,15 @@ dash.register_page(__name__, path='/', name="home") # Example registration
 def layout():
     # Use dmc.Paper to create a styled container with a shadow
     return dmc.Container(
-        [
-            create_new_user_component(),
-            create_view_users_button(),
-            create_select_user_button(),
-            create_select_user_modal(),
+        [   
+            create_readme_button(),
+            dmc.ButtonGroup([
+                create_new_user_component(),
+                create_view_users_button(),
+                create_select_user_button(),
+                create_select_user_modal()
+            ]),
+
             dmc.Paper(
                 # dmc.Stack provides clean vertical spacing between its children
                 dmc.Stack(
