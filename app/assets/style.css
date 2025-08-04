@@ -1,9 +1,10 @@
 .glow-button {
   transition: 0.3s;
+  --glow-color: rgba(0, 255, 179, 0.644)
 }
 
 .glow-button:hover {
-  box-shadow: 0 0 20px rgba(0, 255, 179, 0.644); /* Blue glow */
+  box-shadow: 0 0 20px var(--glow-color, rgba(0, 255, 179, 0.644)); /* Blue glow by default*/
   transform: scale(1.05); /* Optional slight pop */
 }
 
