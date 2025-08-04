@@ -106,18 +106,16 @@ This project introduces an integrated solution that moves recipient management t
    - Drop `Dag_Info_API_Plugin.py` into your Airflow `plugins/` directory and restart the webserver/scheduler.
 
 4. **Use the operator in DAGs**
+   Traditionally, you would use Airflow's 'EmailOperator'. Migrating from 'EmailOperator' is very easy.
+   Simply replace every with 'DynamicRecipientsEmailOperator' and remove 'to','cc, and 'bcc' parameters.
+
    ```python
    from custom_email_operator import DynamicRecipientsEmailOperator
-
-   DynamicRecipientsEmailOperator(
-       task_id="notify",
-       subject="Pipeline status",
-       html_content="...",
-       db_conn_id="sqlite:///Dynamic_Emails.db",  # or another SQLAlchemy URI
-   )
+    # db_conn_id parameter defaults to SQLite, but you can easily use another database system by passing in another SQLAlchemy URI.
+   DynamicRecipientsEmailOperator(db_conn_id="sqlite:///Dynamic_Emails.db", subject='...', content='...',...)
    ```
 
-5. **Update recipients via UI**
+6. **Update recipients via UI**
    - Navigate to `http://<host>:8050` (or the deployed URL) and manage recipients per DAG/task.
 
 ## Why It Matters
