@@ -34,12 +34,12 @@ app.layout = dmc.MantineProvider(
 
 #http://localhost:8887/
 #enable this when running on local machine
-if __name__ == '__main__':
-    app.run(debug=True, port=8050, host='0.0.0.0',)
+# if __name__ == '__main__':
+#     app.run(debug=True, port=8050, host='0.0.0.0',)
 
 
 #https://dynamic-email-operator-ui.onrender.com/dags/Click_Me!
 #enable this when running through Render.com host site
-# if __name__ == "__main__":
-#     port = int(os.environ.get("PORT", 10000))
-#     app.run(host="0.0.0.0", port=port)
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
