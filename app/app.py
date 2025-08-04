@@ -3,6 +3,7 @@ from dash import Dash, html, dcc, Input, Output
 import dash_bootstrap_components as dbc
 from database import DynamicRecipientDB
 import dash_mantine_components as dmc
+import os
 
 #http://localhost:8887/
 app = Dash(__name__, use_pages=True, suppress_callback_exceptions=True)
