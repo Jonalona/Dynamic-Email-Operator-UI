@@ -1,8 +1,8 @@
 import dash
 from dash import html, dcc, callback, Input, Output, callback_context as ctx, State, no_update
-from shared_dash import recipient_DB
+from global_vars import recipient_DB
 import dash_mantine_components as dmc
-from shared_dash import recipient_DB
+from global_vars import recipient_DB
 import json, csv
 
 ###########################################################################
@@ -10,10 +10,18 @@ import json, csv
 ###########################################################################
 
 def create_new_user_component():
-    # Return both components inside a container (e.g., html.Div)
+    """
+    Construct and return a div for “Create a New User” functionality.
+
+    a notification area, a hidden Store to coordinate modal state,
+    a button to launch the modal, and the modal itself containing input fields
+    for name and email plus submit/close controls.
+    """
     return html.Div([
         dmc.NotificationContainer(id="notification-container"),
         dcc.Store(id="new_user_button_close"),
+
+        # Button that, when clicked, opens the “Create a New User” modal
         dmc.Button(
             "Create a New User",
             variant="outline",
@@ -21,10 +29,11 @@ def create_new_user_component():
             size="sm",
             radius="sm",
             id="modal-demo-button", # The ID that triggers the modal
-            style={"backgroundColor": "#90EE90BA"}
+            className="glow-button", 
+            style={"--glow-color": "#90EE90BA", "backgroundColor": "#90EE90BA"}
         ),
         
-        # The Modal is now part of the layout returned by this function
+        # Modal dialog for entering a new user’s Name and Email
         dmc.Modal(
             title="Create a New User",
             id="modal-simple",
@@ -103,6 +112,23 @@ def close_simple_modal(modal_update, opened):
     State("new_user_email","value")
 )
 def add_new_user_to_DB(n_clicks, name, email):
+    """
+    Handle the “Create a New User” modal submission: validate the input email,
+    attempt to insert the new user into the database, and produce
+    Notification payloads reflecting success or failure.
+
+    Args:
+        name (str):  
+            The desired display name for the new user; may be None or empty.
+        email (str):  
+            The raw email string entered by the user; may contain one or
+            more comma-separated addresses.
+
+    Returns:
+        List[dict]:  
+            A list of notification dictionaries to indicate, for each email value in the
+            input text box, whether the user already existed or not.
+    """
     name = name or "NONE"
     if email_is_invalid(email):
         return dash.no_update
@@ -192,7 +218,7 @@ def alert_auto(bad_email_store_data):
 
 
 def email_is_invalid(email):
-    return email is None or "@" not in email
+    return email is None or "@" not in email or '.' not in email
 
 #########################################################################
 #################CREATE NEW USER BUTTON END##############################
@@ -219,7 +245,9 @@ def create_view_users_button():
                 size="sm",
                 radius="sm",
                 id="view-users-button",
-                style={"backgroundColor": "rgba(250,128,114,0.5)"}
+    
+                className="glow-button", 
+                style={"--glow-color": "rgba(250,128,114,1)", "backgroundColor": "rgba(250,128,114,0.5)"}
             ),
             dmc.Modal(
                 title="View and Delete Users",
@@ -427,3 +455,23 @@ def delete_user_confirmation(n_clicks, children, n_clicks2):
 )
 def reset_view_users_filter(opened):
     return None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

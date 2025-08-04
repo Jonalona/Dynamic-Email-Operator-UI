@@ -1,9 +1,9 @@
 import dash
 from dash import html, dcc, callback, Input, Output, callback_context as ctx, State, no_update
-from shared_dash import recipient_DB
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
 from global_vars import *
+
 
 
 
@@ -14,6 +14,7 @@ from global_vars import *
 ######################    Component Definitions    ####################
 #▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
 
+#returns a button that, when clicked, opens the modal as defined in create_select_user_modal() below
 def create_select_user_button():
     button = dmc.Button(
         "View a User's Tasks",

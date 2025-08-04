@@ -1,23 +1,90 @@
-import os
 from sqlalchemy import create_engine, text
 from typing import Dict
 
 class DynamicRecipientDB():
-    def __init__(self, db_url:str = "sqlite:///recipients.db"):
+    """
+    DynamicRecipientDB provides a simple, SQLAlchemy‐backed interface for
+    managing email recipients and users in your application. It connects to
+    a SQLite database by default. But very easy to use any other sqlalchemy supported
+    databases by simply explicitly passing in db_url. 
+    There are two tables in the database, `users` and `recipients`—
+    and exposes methods to add, remove, update, and query both users and their
+    email‐recipient relationships across DAGs and tasks. By encapsulating all
+    the SQL logic (including deduplication checks, join queries, and batch
+    operations) behind a clean Python API, it lets the rest of your code focus
+    on business rules and UI, rather than hand‐crafting SQL each time.
+    """
+    def __init__(self, db_url:str = "sqlite:///Dynamic_Emails.db", echo=False):
         self.db_url = db_url
-        #self.dag_id = dag_id
-        self.engine = create_engine(db_url, echo=False)
-        pass
+        self.engine = create_engine(db_url, echo=echo)
+        self.create_schema_if_missing()
+
+    def get_emails_by_send_type(self, dag_id: str, task_id: str, flag_id: str = "DEFAULT") -> Dict[str, list]:
+        """
+        Returns a dict with keys 'cc', 'bcc', and 'to_' mapping to lists of
+        email addresses for recipients who have that send‐type flag set to True
+        for the given dag/task/flag.
+        """
+        sql = text("""
+            SELECT u.email, er.cc, er.bcc, er.to_
+            FROM recipients AS er
+            JOIN users AS u
+              ON u.user_id = er.user_id
+            WHERE er.dag_id = :dag_id
+              AND er.task_id = :task_id
+              AND er.flag_id = :flag_id
+        """)
+        # initialize empty lists
+        emails_by_type = {"cc": [], "bcc": [], "to_": []}
+
+        with self.engine.connect() as conn:
+            result = conn.execute(sql, {
+                "dag_id": dag_id,
+                "task_id": task_id,
+                "flag_id": flag_id
+            })
+            for row in result:
+                email = row.email.lower()
+                if row.cc:
+                    emails_by_type["cc"].append(email)
+                if row.bcc:
+                    emails_by_type["bcc"].append(email)
+                if row.to_:
+                    emails_by_type["to_"].append(email)
+
+        return emails_by_type
+
+    def create_schema_if_missing(self):
+        CREATE_TABLE_SQL = """
+            CREATE TABLE IF NOT EXISTS recipients (
+                user_id INTEGER,
+                dag_id TEXT NOT NULL,
+                task_id TEXT DEFAULT "DEFAULT",
+                flag_id TEXT DEFAULT "DEFAULT",
+                cc BOOL DEFAULT 0,
+                bcc BOOL DEFAULT 0,
+                to_ BOOL DEFAULT 0
+            );
+            """
+
+        CREATE_USER_TABLE_SQL = """
+            CREATE TABLE IF NOT EXISTS users (
+                user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                email TEXT DEFAULT "DEFAULT"
+            );
+            """
+        # Connect and execute the table creation command
+        with self.engine.connect() as connection:
+            print("Connecting to database and initializing schemas if missing...")
+            connection.execute(text(CREATE_TABLE_SQL))
+            connection.execute(text(CREATE_USER_TABLE_SQL))
     
-    #returns every recipient in 'email_recipients' table
+    #returns every recipient in 'recipients' table
     def get_recipients(self, dag_id:str=None, task_id:str=None):
         with self.engine.connect() as connected:
-            # result = connected.execute(
-            #     text("SELECT email, name, cc, bcc, to_ FROM email_recipients WHERE dag_id = :dag_id AND task_id = :task_id"),
-            #     {"dag_id": dag_id,"task_id":task_id}
-            # )
             result = connected.execute(
-                text("SELECT user_id, dag_id, task_id, flag_id, cc, bcc, to_ FROM email_recipients")
+                text("SELECT user_id, dag_id, task_id, flag_id, cc, bcc, to_ FROM recipients")
             )
             # Your code is the same whether it's SQLite or Postgres!
             return [row for row in result]
@@ -30,7 +97,7 @@ class DynamicRecipientDB():
             )
             return [row._mapping for row in result]
     
-    #adds a recipient into the 'email_recipients' table
+    #adds a recipient into the 'recipients' table
     def add_recipient(self, recipient_dict: dict):
         """Adds a new recipient if it doesn't already exist."""
         dag_id = recipient_dict["dag_id"]
@@ -46,7 +113,7 @@ class DynamicRecipientDB():
             existing = connected.execute(
                 text("""
                     SELECT COUNT(1)
-                    FROM email_recipients
+                    FROM recipients
                     WHERE user_id = :user_id
                     AND dag_id = :dag_id
                     AND task_id = :task_id
@@ -58,7 +125,7 @@ class DynamicRecipientDB():
             if existing == 0:  # Only insert if no existing entry
                 connected.execute(
                     text("""
-                        INSERT INTO email_recipients
+                        INSERT INTO recipients
                         (user_id, dag_id, task_id, flag_id, cc, bcc, to_)
                         VALUES (:user_id, :dag_id, :task_id, :flag_id, :cc, :bcc, :to_)
                     """),
@@ -74,7 +141,7 @@ class DynamicRecipientDB():
 
     def delete_recipient(self, email: str, dag_id: str, task_id: str, flag_id: str = "DEFAULT") -> bool:
         """
-        Deletes a recipient from the email_recipients table based on the user's email,
+        Deletes a recipient from the recipients table based on the user's email,
         dag_id, task_id, and (optional) flag_id.
 
         Returns:
@@ -99,7 +166,7 @@ class DynamicRecipientDB():
             # Step 2: Delete the recipient entry
             result = conn.execute(
                 text("""
-                    DELETE FROM email_recipients
+                    DELETE FROM recipients
                     WHERE user_id = :user_id
                     AND dag_id = :dag_id
                     AND task_id = :task_id
@@ -198,7 +265,7 @@ class DynamicRecipientDB():
 
         return email_exists
 
-    #gets the singular recipient from email_recipients table with matching dag,task,flag, and user ids
+    #gets the singular recipient from recipients table with matching dag,task,flag, and user ids
     def get_recipient_by_dag_task_flag_user(self, id_dict:dict):
         assert(type(id_dict) is dict)
 
@@ -208,14 +275,14 @@ class DynamicRecipientDB():
                     u.user_id,  -- Get the user's ID
                     u.email,          -- Get the user's email from the 'users' table
                     u.name,           -- Get the user's name
-                    er.cc,            -- Get the cc flag from the 'email_recipients' table
+                    er.cc,            -- Get the cc flag from the 'recipients' table
                     er.bcc,           -- Get the bcc flag
                     er.to_,            -- Get the to_ flag
                     er.dag_id,
                     er.task_id,
                     er.flag_id
                 FROM
-                    email_recipients AS er
+                    recipients AS er
                 JOIN
                     users AS u ON er.user_id = u.user_id
                 WHERE
@@ -250,14 +317,14 @@ class DynamicRecipientDB():
                     u.user_id,  -- Get the user's ID
                     u.email,          -- Get the user's email from the 'users' table
                     u.name,           -- Get the user's name
-                    er.cc,            -- Get the cc flag from the 'email_recipients' table
+                    er.cc,            -- Get the cc flag from the 'recipients' table
                     er.bcc,           -- Get the bcc flag
                     er.to_,            -- Get the to_ flag
                     er.dag_id,
                     er.task_id,
                     er.flag_id
                 FROM
-                    email_recipients AS er
+                    recipients AS er
                 JOIN
                     users AS u ON er.user_id = u.user_id
                 WHERE
@@ -319,7 +386,7 @@ class DynamicRecipientDB():
                     "to_": email_dict["to_"],
                 }
 
-                # 3) Try inserting into email_recipients
+                # 3) Try inserting into recipients
                 try:
                     self.add_recipient(recipient_dict)
                     results.append(True)
@@ -345,7 +412,7 @@ class DynamicRecipientDB():
         with self.engine.connect() as connected:
             
             connected.execute(
-                text("UPDATE email_recipients SET to_ = :to_, cc = :cc, bcc = :bcc WHERE user_id = :user_id AND dag_id = :dag_id AND task_id = :task_id AND flag_id = :flag_id"),
+                text("UPDATE recipients SET to_ = :to_, cc = :cc, bcc = :bcc WHERE user_id = :user_id AND dag_id = :dag_id AND task_id = :task_id AND flag_id = :flag_id"),
                 {"dag_id": dag_id, "task_id":task_id, "flag_id":flag_id, "cc":cc, "bcc":bcc, "to_":to_,"user_id":user_id}
             )
             connected.commit()
@@ -368,7 +435,7 @@ class DynamicRecipientDB():
         with self.engine.connect() as connected:
             # Define the SELECT query using text() for consistency
             sql_query = text(
-                "SELECT to_, cc, bcc FROM email_recipients WHERE user_id = :user_id AND dag_id = :dag_id AND task_id = :task_id AND flag_id = :flag_id"
+                "SELECT to_, cc, bcc FROM recipients WHERE user_id = :user_id AND dag_id = :dag_id AND task_id = :task_id AND flag_id = :flag_id"
             )
             
             # Prepare the parameters for the query
@@ -396,9 +463,10 @@ class DynamicRecipientDB():
                 # Handle the case where multiple records are found, which might indicate a data integrity issue
                 raise ValueError(f"Expected 1 record but found {len(rows)} for user_id: {user_id}, dag_id: {dag_id}, task_id: {task_id}, flag_id: {flag_id}")
 
-#WIP: idea was to use this in the customer EmailOperator class which should ha ve read only permissions
+#WIP: idea was to use this in the custom EmailOperator class which should have read only permissions.
+#dangerous to expose DynamicRecipientDB's write functionality when it's not neccessary
 class DynamicRecipientFetcher():
-    def __init__(self, db_url:str = "sqlite:///recipients.db"):
+    def __init__(self, db_url:str = "sqlite:///Dynamic_Emails.db"):
         self.dynamicRecipients = DynamicRecipientDB(db_url)
     
     

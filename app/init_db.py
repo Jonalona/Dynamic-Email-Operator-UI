@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, text
 from database import DynamicRecipientDB
 
 # The name of your database file
-DB_URL = "sqlite:///recipients.db"
+DB_URL = "sqlite:///Dynamic_Emails.db"
 
 # Create an engine to connect to the database
 engine = create_engine(DB_URL)
@@ -13,10 +13,10 @@ rdDB = DynamicRecipientDB()
 if(True):
     # The SQL command to create the table
     # "IF NOT EXISTS" prevents errors if you run this script multiple times
-    CLEAR_DB_SQL = "DROP TABLE IF EXISTS email_recipients;"
+    CLEAR_DB_SQL = "DROP TABLE IF EXISTS recipients;"
     CLEAR_DB_SQL_USERS = "DROP TABLE IF EXISTS users;"
     CREATE_TABLE_SQL = """
-    CREATE TABLE IF NOT EXISTS email_recipients (
+    CREATE TABLE IF NOT EXISTS recipients (
         user_id INTEGER,
         dag_id TEXT NOT NULL,
         task_id TEXT DEFAULT "DEFAULT",
@@ -41,7 +41,7 @@ if(True):
         connection.execute(text(CLEAR_DB_SQL_USERS))
         connection.execute(text(CREATE_TABLE_SQL))
         connection.execute(text(CREATE_USER_TABLE_SQL))
-        print("Table 'dag_email_recipients' created successfully (if it didn't exist).")
+        print("Table 'dag_recipients' created successfully (if it didn't exist).")
 
 
 
@@ -77,7 +77,7 @@ if(True):
     },
     {
         "user_id": 3,
-        "dag_id": "Click_Me!",
+        "dag_id": "BCG_Split",
         "task_id": "bcg_split_start",
         "flag_id": "DEFAULT",
         "cc": False,
@@ -86,7 +86,7 @@ if(True):
     },
     {
         "user_id": 2,
-        "dag_id": "Click_Me!",
+        "dag_id": "BCG_Split",
         "task_id": "bcg_split_start",
         "flag_id": "DEFAULT",
         "cc": True,
@@ -95,7 +95,7 @@ if(True):
     },
     {
         "user_id": 2,
-        "dag_id": "Click_Me!",
+        "dag_id": "BCG_Split",
         "task_id": "count_generator",
         "flag_id": "DEFAULT",
         "cc": False,
@@ -140,7 +140,7 @@ if(True):
     },
     {
         "user_id": 6,
-        "dag_id": "Click_Me!",
+        "dag_id": "BCG_Split",
         "task_id": "success_emailer",
         "flag_id": "DEFAULT",
         "cc": True,
@@ -223,7 +223,7 @@ if(True):
     },
     {
         "user_id": 12,
-        "dag_id": "Click_Me!",
+        "dag_id": "BCG_Split",
         "task_id": "split_all_files",
         "flag_id": "DEFAULT",
         "cc": False,
@@ -232,7 +232,7 @@ if(True):
     },
     {
         "user_id": 12,
-        "dag_id": "Click_Me!",
+        "dag_id": "BCG_Split",
         "task_id": "remove_og_files",
         "flag_id": "DEFAULT",
         "cc": False,
@@ -403,7 +403,7 @@ if(True):
     },
     {
         "user_id": 0,
-        "dag_id": "Click_Me!",
+        "dag_id": "BCG_Split",
         "task_id": "split_all_files",
         "flag_id": "DEFAULT",
         "cc": False,
@@ -412,7 +412,7 @@ if(True):
     },
     {
         "user_id": 1,
-        "dag_id": "Click_Me!",
+        "dag_id": "BCG_Split",
         "task_id": "compressor",
         "flag_id": "DEFAULT",
         "cc": True,
