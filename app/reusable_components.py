@@ -469,8 +469,29 @@ def reset_view_users_filter(opened):
 
 
 
-
-
+def create_readme_button():
+    readme_button = html.A(
+        dmc.Button(
+            [
+                
+                html.Img(
+                    src="assets/github-mark-white.png",
+                    style={"width": "18px", "marginRight": "8px"}
+                ),
+                "View README"
+            ],
+            variant="outline",
+            color="blue",
+            size="md",
+            radius="sm",
+                        className="glow-button", 
+            style={"--glow-color": "#90EE90BA", "backgroundColor": "#A3B8A3B8"}
+        ),
+        href="https://github.com/Jonalona/Dynamic-Email-Operator-UI/blob/main/README.md",
+        target="_blank",
+        style={"textDecoration": "none"},  # remove the default underline
+    )
+    return readme_button
 
 
 
