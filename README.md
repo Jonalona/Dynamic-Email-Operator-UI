@@ -116,7 +116,7 @@ This project introduces an integrated solution that moves recipient management t
    ```
 
 6. **Update recipients via UI**
-   - Navigate to `http://<host>:8050` (or the deployed URL) and manage recipients per DAG/task.
+   - Navigate to `http://localhost:8887/` to visit the web app and and manage recipients per DAG/task.
 
 ## Why It Matters
 
