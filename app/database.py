@@ -226,30 +226,47 @@ class DynamicRecipientDB():
             return "User Added Successfully"
         
 
-    def delete_user(self, email):
+    def delete_user(self, email: str) -> str:
         """
-        Deletes a user by email. Returns:
+        Deletes a user by email from the 'users' table and also removes all
+        of their associated entries from the 'recipients' table. This action
+        is performed in a single transaction.
+
+        Returns:
         - "User Not Found"            if there was no user with that email (no DELETE)
-        - "User Deleted Successfully" if the row was deleted
+        - "User Deleted Successfully" if the user and their recipient entries were deleted
         """
+        email = email.lower()
         with self.engine.connect() as conn:
-            # 1) Check that the user exists
-            exists = conn.execute(
-                text("SELECT COUNT(1) FROM users WHERE email = :email"),
-                {"email": email}
-            ).scalar() > 0
+            # Using conn.begin() starts a transaction that will auto-commit on
+            # success or rollback on any exception.
+            with conn.begin():
+                # Step 1: Find the user_id for the given email.
+                user_row = conn.execute(
+                    text("SELECT user_id FROM users WHERE email = :email"),
+                    {"email": email}
+                ).fetchone()
 
-            if not exists:
-                return "User Not Found"
+                # If no user is found, we cannot proceed.
+                if not user_row:
+                    return "User Not Found"
 
-            # 2) Delete the row
-            result = conn.execute(
-                text("DELETE FROM users WHERE email = :email"),
-                {"email": email}
-            )
-            conn.commit()
+                user_id = user_row.user_id
 
-            return "User Deleted Successfully"
+                # Step 2: Delete all corresponding entries from the 'recipients' table.
+                conn.execute(
+                    text("DELETE FROM recipients WHERE user_id = :user_id"),
+                    {"user_id": user_id}
+                )
+
+                # Step 3: Delete the user from the 'users' table.
+                conn.execute(
+                    text("DELETE FROM users WHERE user_id = :user_id"),
+                    {"user_id": user_id}
+                )
+
+        # If the 'with' block completes without errors, the transaction is committed.
+        return "User Deleted Successfully"
 
 
     def does_user_exist_by_email(self, email: str) -> bool:
