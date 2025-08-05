@@ -1,4 +1,4 @@
-# Dynamic Email Operator UI
+# Dynamic Email Operator UI - by Jonah Reisner
 
 ### 🚀 Live Demo (UI + API on Render)
 
