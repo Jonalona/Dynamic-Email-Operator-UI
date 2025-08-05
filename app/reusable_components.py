@@ -238,6 +238,7 @@ def create_view_users_button():
     return html.Div(
         [
             dcc.Store("store-delete-email"),
+            dmc.NotificationContainer(id="notification-container-delete-user"),
             dmc.Button(
                 "View/Delete All Users",
                 variant="outline",
@@ -283,6 +284,7 @@ def open_view_users_modal(n_clicks):
 # Callback to update the list of buttons based on the filter
 @callback(
     Output('button-container-users-view', 'children'),
+    Output('notification-container-delete-user', 'sendNotifications'),
     Input('filter-input-users-view', 'value'),
     Input({"type":"button-delete-user","index":dash.ALL}, "n_clicks"),
     State('button-container-users-view', 'children'),
@@ -310,7 +312,7 @@ def update_button_list_on_filter(filter_value, n_clicks, children):
         comp_id = json.loads(comp_id_str) # turn the JSON back into a Python dict
         if comp_id.get("type") == "button-delete-user" and triggered["value"] is None:
             print("NO UPDATE")
-            return children
+            return children, []
     except json.JSONDecodeError:
         print("decode error")
         pass
@@ -318,12 +320,12 @@ def update_button_list_on_filter(filter_value, n_clicks, children):
     #If the filter text fired, just re‑render the filtered list:
     if isinstance(ctx.triggered_id, str) and ctx.triggered_id == "filter-input-users-view":
         #triggered id is either filter input or removing user; shown users must be updated regardless
-        return logic_for_update_button_list(filter_value=filter_value)
+        return logic_for_update_button_list(filter_value=filter_value), []
     
     #this gets triggered when button is pressed to keep a user
     #(because the button with id.type button-delete-user is erased
     if ctx.triggered_id is None:
-        return children
+        return children, []
     
     email = ctx.triggered_id.get("index")
 
@@ -333,8 +335,59 @@ def update_button_list_on_filter(filter_value, n_clicks, children):
     #and not isinstance(n_clicks, list) and n_clicks > 0:
     print("DELETE BUTTON PRESSED")
     delete_user_log = recipient_DB.delete_user(email) #returns a success or failure string
+    successful_delete = delete_user_log == "User Deleted Successfully"
+    
+    #make an alert to indicate if delete was successful or not
+    delete_notifcation = []
+    big_alert_styles = {
+                    # override the outer container
+                    "root": {
+                        "maxWidth": "1000px",    # make it *really* wide
+                        "padding": "1.5rem",      
+                    },
+                    # bump up the title text
+                    "title": {
+                        "fontSize": "1.5rem",
+                        "marginBottom": "0.5rem",
+                    },
+                    # bump up the body text
+                    "description": {
+                        "fontSize": "1.25rem",
+                    }
+                }
+    if successful_delete:
+
+        delete_notifcation.append({
+            "action": "show",
+            #"position":"bottom-center",
+            "title": "Delete successful!",
+            "message": f"Database has been updated",
+            "color": "green",
+            "autoClose": 3000,
+            "style": {
+                "minWidth": "1000px",     # make it wider
+                "fontSize": "40px",      # bigger text
+                "padding": "16px 24px",  # more breathing room
+            },
+            "styles": big_alert_styles
+        })
+    else:
+         delete_notifcation.append({
+            "action": "show",
+            #"position":"bottom-center",
+            "title": "Delete unsuccessful",
+            "message": "User Not Found",
+            "color": "red",
+            "autoClose": 3000,
+            "style": {
+                "minWidth": "1000px",     # make it wider
+                "fontSize": "40px",      # bigger text
+                "padding": "16px 24px",  # more breathing room
+            },
+            "styles": big_alert_styles
+        })
     print(delete_user_log)
-    return logic_for_update_button_list(filter_value=filter_value)
+    return logic_for_update_button_list(filter_value=filter_value), delete_notifcation
     
 
 
