@@ -34,18 +34,21 @@ def create_select_user_modal()->dmc.Modal:
         title="Select User to View Which DAG and Tasks They're Included In",
         id="select-user-modal",
         children=[
-            dmc.TextInput(
-                id="filter-input-users-view-2",
-                placeholder="Filter users by email",
-                radius="xl" # Pill-shaped
+            dmc.Stack(
+                [
+                    dmc.Switch(onLabel="ON", offLabel="OFF", radius="xl", size='md', checked=True, id="select-user-show-only-relevant"),
+                    dmc.TextInput(
+                        id="filter-input-users-view-2",
+                        placeholder="Filter users by email",
+                        radius="xl" # Pill-shaped
+                    ),               
+                ]
             ),
-            # dmc.ScrollArea is the Mantine way to handle scrollable content
             dmc.ScrollArea(
-                h="55vh", # height
-                id="button-container-users-view-2",
-                # Children will be populated by the callback
-            )
-            
+                    h="55vh", # height
+                    id="button-container-users-view-2"
+                    # Children will be populated by the callback
+            )    
         ]
     )
 
@@ -123,17 +126,21 @@ def update_button_list_on_filter(filter_value):
 
 
 @callback(
-    Output('url', 'pathname', allow_duplicate=True), #not even sure what allow_duplicate does...
+    Output('url', 'href', allow_duplicate=True), #not even sure what allow_duplicate does...
     Input({'type': 'email-view-button-2', 'index': dash.ALL}, "n_clicks"),
+    State("select-user-show-only-relevant","checked"),
     prevent_initial_call = True
 )
-def change_url_to_user(n_clicks):
+def change_url_to_user(n_clicks, only_show_relevant):
     if not any(n_clicks):
         raise dash.exceptions.PreventUpdate
 
     triggered_id = dash.callback_context.triggered_id
     email = triggered_id['index']
-    return f'/user/{email}'
+    print(f"DEBUG URL BUILDER: Switch value is '{only_show_relevant}'. ")
+
+    return f'/user/{email}?only_show_relevant={str(only_show_relevant)}'
+
 
 #▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 ######################    Callback logic    ###########################
