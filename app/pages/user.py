@@ -1,9 +1,9 @@
 import dash
 from dash import html, dcc, callback, Input, Output, callback_context as ctx, State, no_update
-from shared_dash import recipient_DB
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
 from global_vars import *
+from urllib.parse import urlparse, parse_qs
 
 
 #returns color corresponding to (to_cc_bcc) attributes of recipient 
@@ -39,14 +39,14 @@ def recip_color_from_sendType_dict(sendType_dict:dict):
     return grad
 
 
-def show_emails_per_task_per_dag(dag_id, dag_tasks, email_filter_str=None):
+def show_emails_per_task_per_dag(dag_id, dag_tasks, email_filter_str, only_show_relevant=True):
 
     """
     This function is called by Dash whenever a user navigates to a URL
     matching the path_template.
     """
 
-        
+    all_populated_tasks =  populate_task_container(dag_id, email_filter_str, only_show_relevant)
     all_tasks_stack = dmc.Stack(
         [
         
@@ -55,7 +55,7 @@ def show_emails_per_task_per_dag(dag_id, dag_tasks, email_filter_str=None):
                 p="md",    # Corresponds to padding: '10px'
                 style={"border": "1px solid #ccc"},  
                 id='task-container',
-                children=populate_task_container(dag_id, email_filter_str)
+                children=all_populated_tasks
             ),
 
         ],
@@ -65,7 +65,7 @@ def show_emails_per_task_per_dag(dag_id, dag_tasks, email_filter_str=None):
 
     #if there's an email filter, we're showing a lot of these below containers.
     #ids were not implemented with dynmaic calls in mind, so no selection/option features. Very simple only
-    if email_filter_str is not None:
+    if len([task for task in all_populated_tasks if task is not None]) > 0:
         return dmc.Container(
             [
                 dmc.Title(f"Details for DAG: {dag_id}", order=1),
@@ -75,9 +75,11 @@ def show_emails_per_task_per_dag(dag_id, dag_tasks, email_filter_str=None):
             bg="var(--mantine-color-blue-light)",
             id="main_container_dag",
         )
+    else:
+        return None
     
 
-def populate_task_container(dag_id, email_filter_str = None):
+def populate_task_container(dag_id, email_filter_str, only_show_relevant):
     def recipients_from_dag_task_ids(dag_id, task_id):
         user_dicts = recipient_DB.get_recipients_by_dag_task(dag_id, task_id)
         print([user["email"] for user in user_dicts])
@@ -95,10 +97,14 @@ def populate_task_container(dag_id, email_filter_str = None):
 
         
         email_buttons = []
+        filtered_name_found_in_curr_task = not only_show_relevant
         for recipient in recipient_dicts:
                 #if email_Filter is explicitly passed in then only add a recipient if it's email matches up with the filter
                 if email_filter_str is not None and recipient["email"] != email_filter_str:
                     continue
+                
+                #fitlered name was found, so set flag to True
+                filtered_name_found_in_curr_task = True
                 button = dmc.Button(
                     recipient["email"],
                     id={"type": "sub_task_email", "user_id": recipient["user_id"], "dag_id":dag_id, "task_id":task_id, "flag_id":recipient["flag_id"]},
@@ -115,7 +121,7 @@ def populate_task_container(dag_id, email_filter_str = None):
                                     "dag_id": dag_id,
                                     "flag_id": recipient["flag_id"]}, 
                                     data=None)
-            
+
                 email_buttons.append(button)
                 email_buttons.append(store)
 
@@ -135,7 +141,9 @@ def populate_task_container(dag_id, email_filter_str = None):
                 "boxShadow": "0px 3px 8px 0px rgba(0, 0, 0, 0.25)"
             },
         )
-        task_papers.append(task_block)
+
+        if filtered_name_found_in_curr_task:
+            task_papers.append(task_block)
 
     return task_papers
 
@@ -149,19 +157,31 @@ dash.register_page(__name__, path_template="/user/<email>")
 # Define the layout as a FUNCTION.
 # Dash will automatically pass the value captured from the URL
 # into the argument with the same name (dag_id).
-def layout(email):
+def layout(email, only_show_relevant=None):
+    only_show_relevant = not only_show_relevant == "False"
+    only_show_relevant = False if not only_show_relevant else True
+    print(f"PEEPEEPOOPOO{str(only_show_relevant)}")
     email = email.lower()
     all_users = recipient_DB.get_users()
     email_exists = any(user["email"]==email for user in all_users)
     if not email_exists: 
         return return_error_page(email)
 
-    #all dags, and all tasks, but only showing emails matching parameter 'email'
+    # Check if the search query string exists
+    # only_show_relevant = True #default is to only show dags/tasks if the filtered name is included
+    # if search:
+    #     # parse_qs will turn '?important=true' into {'important': ['true']}
+    #     query_params = parse_qs(search.lstrip('?'))
+    #     # Check if 'important' is in the params and its value is 'true'
+    #     if 'important' in query_params and query_params['only_show_relevant'][0].lower() == 'False':
+    #         only_show_relevant = False
+
+    #creates a container for each dag_id, (where each container has task_ids and populated recipient filtred by 'email')
     all_dags_all_tasks_filtered_containers = []
     for dag_id in ALL_DAGS:
         try:
             dag_tasks = dag_JSON[dag_id]
-            all_dags_all_tasks_filtered_containers.append(show_emails_per_task_per_dag(dag_id, dag_tasks, email))
+            all_dags_all_tasks_filtered_containers.append(show_emails_per_task_per_dag(dag_id, dag_tasks, email, only_show_relevant))
         except KeyError:
             print("ERRORORROROROR")
             pass
@@ -180,17 +200,13 @@ def layout(email):
         ])
     )
     all_dags_all_tasks_filtered_containers.append(home_link)
-    all_dags_stack = dmc.ScrollArea(
-        children = all_dags_all_tasks_filtered_containers,
-        p="md",    # Corresponds to padding: '10px'
-        style={"border": "1px solid #ccc"},
-    )
+
     #package everything together and return it
     return dmc.Container(
         children=all_dags_all_tasks_filtered_containers,
         size="fluid",
         bg="var(--mantine-color-blue-light)",
-        style={"height": "100%","flex":1   },
+        style={"height": "100vh","flex":1   },
         id="main_container_dag",
     )
 
