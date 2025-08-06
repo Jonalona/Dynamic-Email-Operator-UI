@@ -99,7 +99,7 @@ This project introduces an integrated solution that moves recipient management t
 ## Why It Matters
 
 - **Faster iteration**: Operations teams can update alert lists in seconds.
-- **Reduced risk**: Eliminates code redeploys for contact changes.
+- **Reduced risk**: Eliminates code redeploys for contact changes. No more waiting until 3am when no processes are running to restart the Airflow server.
 - **Demonstrates full-stack expertise**: Airflow internals, REST plugins, SQLAlchemy, Dash UI, and Docker all come together in one cohesive system.
 
 ---
