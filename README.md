@@ -42,32 +42,10 @@ This project introduces an integrated solution that moves recipient management t
 
 ## Architecture
 
-```
-          ┌────────────────────────┐
-          │   Dash Frontend UI     │
-          │  (users manage lists)  │
-          └──────────┬─────────────┘
-                     │ REST calls
-                     ▼
-      ┌─────────────────────────────┐
-      │ Dag_Info_API_Plugin (Airflow)│
-      │ provides DAG & task metadata │
-      └──────────┬──────────────────┘
-                 │ DB operations
-                 ▼
-      ┌─────────────────────────────┐
-      │ DynamicRecipientDB (SQLAlchemy) │
-      └──────────┬──────────────────┘
-                 │ runtime lookup
-                 ▼
-      ┌─────────────────────────────┐
-      │ DynamicRecipientsEmailOperator │
-      │  (replaces EmailOperator)   │
-      └─────────────────────────────┘
-```
+![alt text](architecture%20overview/system%20architecture.png)
 
 - All components communicate via simple, well-defined interfaces, making the system modular and extensible.
-- Dockerfile & `docker-compose.yml` demonstrate containerized deployment and reproducible environments.
+- `Dockerfile` & `docker-compose.yml` demonstrate containerized deployment and reproducible environments.
 
 ## Features
 
