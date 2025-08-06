@@ -1,6 +1,6 @@
 # Dynamic Email Operator UI - by Jonah Reisner
 
-### 🚀 Live Demo (UI + API on Render)
+### 🚀 Live Demo (UI + persistent backend on Render)
 
 https://dynamic-email-operator-ui.onrender.com/
 
