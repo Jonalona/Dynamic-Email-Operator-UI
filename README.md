@@ -77,7 +77,7 @@ This project introduces an integrated solution that moves recipient management t
    ```bash
    docker-compose up --build
    ```
-   - The `init_db.py` script seeds the database on startup.
+   - The `init_db.py` script seeds the database on startup with Game of Thrones users. Remove its reference in `Dockerfile` to start with empty database.
    - Dash UI listens on port 8050 (mapped to 8887 in `docker-compose.yml`).
 
 3. **Register the Airflow plugin**
