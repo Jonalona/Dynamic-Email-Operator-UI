@@ -199,16 +199,25 @@ def layout(email, only_show_relevant=None):
             "Go back to Home"
         ])
     )
-    all_dags_all_tasks_filtered_containers.append(home_link)
+    #all_dags_all_tasks_filtered_containers.append(home_link)
 
     #package everything together and return it
     return dmc.Container(
-        children=all_dags_all_tasks_filtered_containers,
+        children = [
+            dmc.Container(
+                children=all_dags_all_tasks_filtered_containers,
+                size="fluid",
+                bg="var(--mantine-color-blue-light)",
+                style={"flex": 1, "overflowY": "auto", "height": "95vh"},
+                id="main_container_dag",
+            ),
+            home_link
+        ],
         size="fluid",
-        bg="var(--mantine-color-blue-light)",
-        style={"height": "100vh","flex":1   },
-        id="main_container_dag",
-    )
+                bg="var(--mantine-color-blue-light)",
+                style={"flex": 1, "overflowY": "auto","height":"100vh"}
+        )
+    
 
 
 def return_error_page(email):
