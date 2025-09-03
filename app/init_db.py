@@ -44,8 +44,73 @@ if(True):
         print("Table 'dag_recipients' created successfully (if it didn't exist).")
 
 
-
-
+    users_to_add = [
+                {
+            "user_id": 0,
+            "name": "Jon Snow",
+            "email": "jonsnow@winterfell.com"
+        },
+        {
+            "user_id": 1,
+            "name": "Daenerys Targaryen",
+            "email": "daenerys@dragonstone.com"
+        },
+        {
+            "user_id": 2,
+            "name": "Tyrion Lannister",
+            "email": "tyrion@casterlyrock.com"
+        },
+        {
+            "user_id": 3,
+            "name": "Arya Stark",
+            "email": "arya@winterfell.com"
+        },
+        {
+            "user_id": 4,
+            "name": "Cersei Lannister",
+            "email": "cersei@kingslanding.com"
+        },
+        {
+            "user_id": 5,
+            "name": "Sansa Stark",
+            "email": "sansa@winterfell.com"
+        },
+        {
+            "user_id": 6,
+            "name": "Jaime Lannister",
+            "email": "jaime@casterlyrock.com"
+        },
+        {
+            "user_id": 7,
+            "name": "Bran Stark",
+            "email": "bran@winterfell.com"
+        },
+        {
+            "user_id": 8,
+            "name": "Brienne of Tarth",
+            "email": "brienne@tarth.com"
+        },
+        {
+            "user_id": 9,
+            "name": "Jorah Mormont",
+            "email": "jorah@mormont.com"
+        },
+        {
+            "user_id": 10,
+            "name": "Samwell Tarly",
+            "email": "samwell@oldtown.com"
+        },
+        {
+            "user_id": 11,
+            "name": "Theon Greyjoy",
+            "email": "theon@ironislands.com"
+        },
+        {
+            "user_id": 12,
+            "name": "Melisandre",
+            "email": "melisandre@redtemple.com"
+        }
+    ]
     recipients_to_add = [
     # ── existing entries (left intact if DAG/task is outside your dag_JSON) ─────
  
