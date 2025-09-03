@@ -15,14 +15,49 @@ yet in the server so can't be acccessed.
 Find this file in 'airflow-server-plugins/Dag_Info_API_PlugIn.py'
 """
 dag_JSON = {
-    "115_Daily_Performance_Email":["data_pull","email_prep"],
-    "115_outbound_optimization_V2":["pull_and_process","prepare_email"],
-    "407_Daily_Performance_Email":["data_pull","email_prep"],
-    "436_Daily_Performance_Email":["data_pull","email_prep"],
-    "499_Daily_Performance_Email":["data_pull","email_prep"],
-    "499_outbound_optimization_V2":["pull_and_process","prepare_email"],
-    "712_Daily_Performance_Email":["data_pull","email_prep"],
-    "BCG_Split":["bcg_split_start","remove_previous_upload","count_generator","split_all_files","compressor","uploader","remove_og_files","success_emailer"]
+    "115_Daily_Performance_Email": ["data_pull", "email_prep"],  # unchanged
+
+    "115_outbound_optimization_V2": [
+        "ad_spend_reallocator_v2_115",
+        "segment_audience_build",
+        "score_offers",
+        "email_growth_marketing_list"
+    ],
+    "407_Daily_Performance_Email": [
+        "kpi_extract_407",
+        "compile_dashboard_artifacts",
+        "email_store_mgrs_list"
+    ],
+    "436_Daily_Performance_Email": [
+        "etl_merch_metrics_436",
+        "generate_variance_report",
+        "email_merchandising_list"
+    ],
+    "499_Daily_Performance_Email": [
+        "daily_perf_499_aggregate",
+        "detect_anomalies",
+        "attach_csv_exports",
+        "email_region_north_list"
+    ],
+    "499_outbound_optimization_V2": [
+        "campaign_scoring_v2_499",
+        "rank_channels",
+        "budget_allocator",
+        "prepare_creative_snapshots",
+        "email_outbound_team_list"
+    ],
+    "712_Daily_Performance_Email": [
+        "warehouse_ops_etl_712",
+        "pickpack_sla_summary",
+        "email_warehouse_ops_list"
+    ],
+    "BCG_Split": [
+        "bcg_manifest_init",
+        "generate_bcg_counts",
+        "partition_client_files",
+        "s3_upload_bcg",
+        "notify_bcg_distribution_list"
+    ]
 }
 
 
