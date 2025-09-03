@@ -47,38 +47,15 @@ if(True):
 
 
     recipients_to_add = [
-    # ── existing entries ────────────────────────────────────────────────────────
-    {
-        "user_id": 0,
-        "dag_id": "DAG ID 0",
-        "task_id": "task id a",
-        "flag_id": "DEFAULT",
-        "cc": False,
-        "bcc": False,
-        "to_": True
-    },
-    {
-        "user_id": 1,
-        "dag_id": "daily_sales_report",
-        "task_id": "task id b",
-        "flag_id": "failure",
-        "cc": True,
-        "bcc": False,
-        "to_": False
-    },
-    {
-        "user_id": 2,
-        "dag_id": "weekly_marketing_update",
-        "task_id": "task id c",
-        "flag_id": "DEFAULT",
-        "cc": False,
-        "bcc": False,
-        "to_": True
-    },
+    # ── existing entries (left intact if DAG/task is outside your dag_JSON) ─────
+ 
+ 
+
+    # ── BCG_Split updated to new task ids ──────────────────────────────────────
     {
         "user_id": 3,
         "dag_id": "BCG_Split",
-        "task_id": "bcg_split_start",
+        "task_id": "bcg_manifest_init",
         "flag_id": "DEFAULT",
         "cc": False,
         "bcc": True,
@@ -87,7 +64,7 @@ if(True):
     {
         "user_id": 2,
         "dag_id": "BCG_Split",
-        "task_id": "bcg_split_start",
+        "task_id": "generate_bcg_counts",
         "flag_id": "DEFAULT",
         "cc": True,
         "bcc": True,
@@ -96,12 +73,14 @@ if(True):
     {
         "user_id": 2,
         "dag_id": "BCG_Split",
-        "task_id": "count_generator",
+        "task_id": "partition_client_files",
         "flag_id": "DEFAULT",
         "cc": False,
         "bcc": True,
         "to_": False
     },
+
+    # ── 115_Daily_Performance_Email (unchanged task set) ───────────────────────
     {
         "user_id": 11,
         "dag_id": "115_Daily_Performance_Email",
@@ -111,10 +90,12 @@ if(True):
         "bcc": False,
         "to_": True
     },
+
+    # ── 407_Daily_Performance_Email updated ────────────────────────────────────
     {
         "user_id": 5,
         "dag_id": "407_Daily_Performance_Email",
-        "task_id": "data_pull",
+        "task_id": "kpi_extract_407",
         "flag_id": "DEFAULT",
         "cc": True,
         "bcc": False,
@@ -123,36 +104,40 @@ if(True):
     {
         "user_id": 5,
         "dag_id": "407_Daily_Performance_Email",
-        "task_id": "email_prep",
-        "flag_id": "failure",
+        "task_id": "email_store_mgrs_list",
+        "flag_id": "DEFAULT",
         "cc": False,
         "bcc": True,
         "to_": False
     },
+
+    # ── 499_outbound_optimization_V2 updated ───────────────────────────────────
     {
         "user_id": 6,
         "dag_id": "499_outbound_optimization_V2",
-        "task_id": "prepare_email",
+        "task_id": "budget_allocator",
         "flag_id": "DEFAULT",
         "cc": False,
         "bcc": False,
         "to_": True
     },
+
+    # ── BCG_Split updated ──────────────────────────────────────────────────────
     {
         "user_id": 6,
         "dag_id": "BCG_Split",
-        "task_id": "success_emailer",
+        "task_id": "notify_bcg_distribution_list",
         "flag_id": "DEFAULT",
         "cc": True,
         "bcc": False,
         "to_": False
     },
 
-    # ── 15 new recipient entries ────────────────────────────────────────────────
+    # ── 436_Daily_Performance_Email updated ────────────────────────────────────
     {
         "user_id": 8,
         "dag_id": "436_Daily_Performance_Email",
-        "task_id": "data_pull",
+        "task_id": "etl_merch_metrics_436",
         "flag_id": "DEFAULT",
         "cc": False,
         "bcc": False,
@@ -161,16 +146,18 @@ if(True):
     {
         "user_id": 8,
         "dag_id": "436_Daily_Performance_Email",
-        "task_id": "email_prep",
-        "flag_id": "failure",
+        "task_id": "generate_variance_report",
+        "flag_id": "DEFAULT",
         "cc": False,
         "bcc": True,
         "to_": False
     },
+
+    # ── 115_outbound_optimization_V2 updated ───────────────────────────────────
     {
         "user_id": 11,
         "dag_id": "115_outbound_optimization_V2",
-        "task_id": "pull_and_process",
+        "task_id": "ad_spend_reallocator_v2_115",
         "flag_id": "DEFAULT",
         "cc": True,
         "bcc": False,
@@ -179,7 +166,18 @@ if(True):
     {
         "user_id": 9,
         "dag_id": "115_outbound_optimization_V2",
-        "task_id": "prepare_email",
+        "task_id": "email_growth_marketing_list",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": False,
+        "to_": True
+    },
+
+    # ── 499_Daily_Performance_Email updated ────────────────────────────────────
+    {
+        "user_id": 10,
+        "dag_id": "499_Daily_Performance_Email",
+        "task_id": "daily_perf_499_aggregate",
         "flag_id": "DEFAULT",
         "cc": False,
         "bcc": False,
@@ -188,25 +186,18 @@ if(True):
     {
         "user_id": 10,
         "dag_id": "499_Daily_Performance_Email",
-        "task_id": "data_pull",
+        "task_id": "detect_anomalies",
         "flag_id": "DEFAULT",
-        "cc": False,
-        "bcc": False,
-        "to_": True
-    },
-    {
-        "user_id": 10,
-        "dag_id": "499_Daily_Performance_Email",
-        "task_id": "email_prep",
-        "flag_id": "failure",
         "cc": True,
         "bcc": False,
         "to_": False
     },
+
+    # ── 712_Daily_Performance_Email updated ────────────────────────────────────
     {
         "user_id": 11,
         "dag_id": "712_Daily_Performance_Email",
-        "task_id": "data_pull",
+        "task_id": "warehouse_ops_etl_712",
         "flag_id": "DEFAULT",
         "cc": False,
         "bcc": False,
@@ -215,16 +206,18 @@ if(True):
     {
         "user_id": 11,
         "dag_id": "712_Daily_Performance_Email",
-        "task_id": "email_prep",
+        "task_id": "email_warehouse_ops_list",
         "flag_id": "DEFAULT",
         "cc": True,
         "bcc": True,
         "to_": False
     },
+
+    # ── BCG_Split updated ──────────────────────────────────────────────────────
     {
         "user_id": 12,
         "dag_id": "BCG_Split",
-        "task_id": "split_all_files",
+        "task_id": "partition_client_files",
         "flag_id": "DEFAULT",
         "cc": False,
         "bcc": True,
@@ -233,57 +226,70 @@ if(True):
     {
         "user_id": 12,
         "dag_id": "BCG_Split",
-        "task_id": "remove_og_files",
+        "task_id": "s3_upload_bcg",
         "flag_id": "DEFAULT",
         "cc": False,
         "bcc": False,
         "to_": True
     },
+
+    # ── 499_outbound_optimization_V2 updated ───────────────────────────────────
     {
         "user_id": 4,
         "dag_id": "499_outbound_optimization_V2",
-        "task_id": "prepare_email",
-        "flag_id": "success",
+        "task_id": "email_outbound_team_list",
+        "flag_id": "DEFAULT",
         "cc": True,
         "bcc": False,
         "to_": False
     },
+
+    # ── 407_Daily_Performance_Email updated ────────────────────────────────────
     {
         "user_id": 7,
         "dag_id": "407_Daily_Performance_Email",
-        "task_id": "email_prep",
+        "task_id": "email_store_mgrs_list",
         "flag_id": "DEFAULT",
         "cc": False,
         "bcc": True,
         "to_": False
     },
+
+    # ── 712_Daily_Performance_Email updated ────────────────────────────────────
     {
         "user_id": 1,
         "dag_id": "712_Daily_Performance_Email",
-        "task_id": "email_prep",
+        "task_id": "email_warehouse_ops_list",
         "flag_id": "DEFAULT",
         "cc": False,
         "bcc": False,
         "to_": True
     },
+
+    # ── 115_Daily_Performance_Email (unchanged task set) ───────────────────────
     {
         "user_id": 3,
         "dag_id": "115_Daily_Performance_Email",
         "task_id": "data_pull",
-        "flag_id": "failure",
+        "flag_id": "DEFAULT",
         "cc": True,
         "bcc": False,
         "to_": False
     },
+
+    # ── 115_outbound_optimization_V2 updated ───────────────────────────────────
     {
         "user_id": 2,
         "dag_id": "115_outbound_optimization_V2",
-        "task_id": "prepare_email",
+        "task_id": "segment_audience_build",
         "flag_id": "DEFAULT",
         "cc": False,
         "bcc": True,
         "to_": False
     },
+
+    # ── (second block begins here in your list) ────────────────────────────────
+    # 115_Daily_Performance_Email (unchanged task set)
     {
         "user_id": 0,
         "dag_id": "115_Daily_Performance_Email",
@@ -297,16 +303,18 @@ if(True):
         "user_id": 1,
         "dag_id": "115_Daily_Performance_Email",
         "task_id": "email_prep",
-        "flag_id": "success",
+        "flag_id": "DEFAULT",
         "cc": False,
         "bcc": True,
         "to_": False
     },
+
+    # 115_outbound_optimization_V2 updated
     {
         "user_id": 2,
         "dag_id": "115_outbound_optimization_V2",
-        "task_id": "pull_and_process",
-        "flag_id": "failure",
+        "task_id": "ad_spend_reallocator_v2_115",
+        "flag_id": "DEFAULT",
         "cc": False,
         "bcc": False,
         "to_": True
@@ -314,26 +322,30 @@ if(True):
     {
         "user_id": 3,
         "dag_id": "115_outbound_optimization_V2",
-        "task_id": "prepare_email",
+        "task_id": "email_growth_marketing_list",
         "flag_id": "DEFAULT",
         "cc": True,
         "bcc": False,
         "to_": True
     },
+
+    # 407_Daily_Performance_Email updated
     {
         "user_id": 4,
         "dag_id": "407_Daily_Performance_Email",
-        "task_id": "email_prep",
+        "task_id": "email_store_mgrs_list",
         "flag_id": "DEFAULT",
         "cc": False,
         "bcc": True,
         "to_": False
     },
+
+    # 436_Daily_Performance_Email updated
     {
         "user_id": 5,
         "dag_id": "436_Daily_Performance_Email",
-        "task_id": "data_pull",
-        "flag_id": "failure",
+        "task_id": "etl_merch_metrics_436",
+        "flag_id": "DEFAULT",
         "cc": True,
         "bcc": True,
         "to_": False
@@ -341,16 +353,18 @@ if(True):
     {
         "user_id": 6,
         "dag_id": "436_Daily_Performance_Email",
-        "task_id": "email_prep",
+        "task_id": "email_merchandising_list",
         "flag_id": "DEFAULT",
         "cc": False,
         "bcc": False,
         "to_": True
     },
+
+    # 499_Daily_Performance_Email updated
     {
         "user_id": 7,
         "dag_id": "499_Daily_Performance_Email",
-        "task_id": "data_pull",
+        "task_id": "daily_perf_499_aggregate",
         "flag_id": "DEFAULT",
         "cc": False,
         "bcc": False,
@@ -359,16 +373,18 @@ if(True):
     {
         "user_id": 8,
         "dag_id": "499_Daily_Performance_Email",
-        "task_id": "email_prep",
-        "flag_id": "failure",
+        "task_id": "attach_csv_exports",
+        "flag_id": "DEFAULT",
         "cc": True,
         "bcc": False,
         "to_": False
     },
+
+    # 499_outbound_optimization_V2 updated
     {
         "user_id": 9,
         "dag_id": "499_outbound_optimization_V2",
-        "task_id": "pull_and_process",
+        "task_id": "campaign_scoring_v2_499",
         "flag_id": "DEFAULT",
         "cc": False,
         "bcc": True,
@@ -377,16 +393,18 @@ if(True):
     {
         "user_id": 10,
         "dag_id": "499_outbound_optimization_V2",
-        "task_id": "prepare_email",
-        "flag_id": "success",
+        "task_id": "prepare_creative_snapshots",
+        "flag_id": "DEFAULT",
         "cc": True,
         "bcc": False,
         "to_": False
     },
+
+    # 712_Daily_Performance_Email updated
     {
         "user_id": 11,
         "dag_id": "712_Daily_Performance_Email",
-        "task_id": "data_pull",
+        "task_id": "warehouse_ops_etl_712",
         "flag_id": "DEFAULT",
         "cc": False,
         "bcc": False,
@@ -395,16 +413,18 @@ if(True):
     {
         "user_id": 12,
         "dag_id": "712_Daily_Performance_Email",
-        "task_id": "email_prep",
+        "task_id": "email_warehouse_ops_list",
         "flag_id": "DEFAULT",
         "cc": True,
         "bcc": True,
         "to_": False
     },
+
+    # BCG_Split updated
     {
         "user_id": 0,
         "dag_id": "BCG_Split",
-        "task_id": "split_all_files",
+        "task_id": "partition_client_files",
         "flag_id": "DEFAULT",
         "cc": False,
         "bcc": True,
@@ -413,81 +433,272 @@ if(True):
     {
         "user_id": 1,
         "dag_id": "BCG_Split",
-        "task_id": "compressor",
+        "task_id": "s3_upload_bcg",
         "flag_id": "DEFAULT",
         "cc": True,
         "bcc": False,
         "to_": False
-    }
-
-    ]
-
-    users_to_add = [
-    # ── existing users ──────────────────────────────────────────────────────────
+    },
     {
     "user_id": 0,
-    "name": "Jon Snow",
-    "email": "jonsnow@winterfell.com"
+    "dag_id": "115_outbound_optimization_V2",
+    "task_id": "ad_spend_reallocator_v2_115",
+    "flag_id": "DEFAULT",
+    "cc": False,
+    "bcc": False,
+    "to_": True
     },
     {
         "user_id": 1,
-        "name": "Daenerys Targaryen",
-        "email": "daenerys@dragonstone.com"
+        "dag_id": "115_outbound_optimization_V2",
+        "task_id": "segment_audience_build",
+        "flag_id": "DEFAULT",
+        "cc": True,
+        "bcc": False,
+        "to_": False
     },
     {
         "user_id": 2,
-        "name": "Tyrion Lannister",
-        "email": "tyrion@casterlyrock.com"
+        "dag_id": "115_outbound_optimization_V2",
+        "task_id": "score_offers",
+        "flag_id": "success",
+        "cc": False,
+        "bcc": True,
+        "to_": False
     },
     {
         "user_id": 3,
-        "name": "Arya Stark",
-        "email": "arya@winterfell.com"
+        "dag_id": "115_outbound_optimization_V2",
+        "task_id": "email_growth_marketing_list",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": False,
+        "to_": True
     },
     {
         "user_id": 4,
-        "name": "Cersei Lannister",
-        "email": "cersei@kingslanding.com"
+        "dag_id": "407_Daily_Performance_Email",
+        "task_id": "kpi_extract_407",
+        "flag_id": "DEFAULT",
+        "cc": True,
+        "bcc": False,
+        "to_": False
     },
     {
         "user_id": 5,
-        "name": "Sansa Stark",
-        "email": "sansa@winterfell.com"
+        "dag_id": "407_Daily_Performance_Email",
+        "task_id": "compile_dashboard_artifacts",
+        "flag_id": "failure",
+        "cc": False,
+        "bcc": True,
+        "to_": False
     },
     {
         "user_id": 6,
-        "name": "Jaime Lannister",
-        "email": "jaime@casterlyrock.com"
+        "dag_id": "407_Daily_Performance_Email",
+        "task_id": "email_store_mgrs_list",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": False,
+        "to_": True
     },
     {
         "user_id": 7,
-        "name": "Bran Stark",
-        "email": "bran@winterfell.com"
+        "dag_id": "436_Daily_Performance_Email",
+        "task_id": "etl_merch_metrics_436",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": True,
+        "to_": False
     },
     {
         "user_id": 8,
-        "name": "Brienne of Tarth",
-        "email": "brienne@tarth.com"
+        "dag_id": "436_Daily_Performance_Email",
+        "task_id": "generate_variance_report",
+        "flag_id": "success",
+        "cc": True,
+        "bcc": False,
+        "to_": False
     },
     {
         "user_id": 9,
-        "name": "Jorah Mormont",
-        "email": "jorah@mormont.com"
+        "dag_id": "436_Daily_Performance_Email",
+        "task_id": "email_merchandising_list",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": False,
+        "to_": True
     },
     {
         "user_id": 10,
-        "name": "Samwell Tarly",
-        "email": "samwell@oldtown.com"
+        "dag_id": "499_Daily_Performance_Email",
+        "task_id": "daily_perf_499_aggregate",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": False,
+        "to_": True
     },
     {
         "user_id": 11,
-        "name": "Theon Greyjoy",
-        "email": "theon@i\u0335r\u0335o\u0335n\u0335i\u0335s\u0335l\u0335a\u0335n\u0335d\u0335s\u0335winterfell.com"
+        "dag_id": "499_Daily_Performance_Email",
+        "task_id": "detect_anomalies",
+        "flag_id": "failure",
+        "cc": True,
+        "bcc": False,
+        "to_": False
     },
     {
         "user_id": 12,
-        "name": "Melisandre",
-        "email": "melisandre@redtemple.com"
+        "dag_id": "499_Daily_Performance_Email",
+        "task_id": "attach_csv_exports",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": True,
+        "to_": False
+    },
+    {
+        "user_id": 0,
+        "dag_id": "499_Daily_Performance_Email",
+        "task_id": "email_region_north_list",
+        "flag_id": "DEFAULT",
+        "cc": True,
+        "bcc": False,
+        "to_": False
+    },
+    {
+        "user_id": 1,
+        "dag_id": "499_outbound_optimization_V2",
+        "task_id": "campaign_scoring_v2_499",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": True,
+        "to_": True
+    },
+    {
+        "user_id": 2,
+        "dag_id": "499_outbound_optimization_V2",
+        "task_id": "rank_channels",
+        "flag_id": "success",
+        "cc": True,
+        "bcc": False,
+        "to_": False
+    },
+    {
+        "user_id": 3,
+        "dag_id": "499_outbound_optimization_V2",
+        "task_id": "budget_allocator",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": False,
+        "to_": True
+    },
+    {
+        "user_id": 4,
+        "dag_id": "499_outbound_optimization_V2",
+        "task_id": "prepare_creative_snapshots",
+        "flag_id": "failure",
+        "cc": False,
+        "bcc": True,
+        "to_": False
+    },
+    {
+        "user_id": 5,
+        "dag_id": "499_outbound_optimization_V2",
+        "task_id": "email_outbound_team_list",
+        "flag_id": "DEFAULT",
+        "cc": True,
+        "bcc": False,
+        "to_": False
+    },
+    {
+        "user_id": 6,
+        "dag_id": "712_Daily_Performance_Email",
+        "task_id": "warehouse_ops_etl_712",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": False,
+        "to_": True
+    },
+    {
+        "user_id": 7,
+        "dag_id": "712_Daily_Performance_Email",
+        "task_id": "pickpack_sla_summary",
+        "flag_id": "DEFAULT",
+        "cc": True,
+        "bcc": False,
+        "to_": False
+    },
+    {
+        "user_id": 8,
+        "dag_id": "712_Daily_Performance_Email",
+        "task_id": "email_warehouse_ops_list",
+        "flag_id": "success",
+        "cc": False,
+        "bcc": True,
+        "to_": False
+    },
+    {
+        "user_id": 9,
+        "dag_id": "115_Daily_Performance_Email",
+        "task_id": "data_pull",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": False,
+        "to_": True
+    },
+    {
+        "user_id": 10,
+        "dag_id": "115_Daily_Performance_Email",
+        "task_id": "email_prep",
+        "flag_id": "failure",
+        "cc": True,
+        "bcc": False,
+        "to_": False
+    },
+    {
+        "user_id": 11,
+        "dag_id": "BCG_Split",
+        "task_id": "bcg_manifest_init",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": True,
+        "to_": False
+    },
+    {
+        "user_id": 12,
+        "dag_id": "BCG_Split",
+        "task_id": "generate_bcg_counts",
+        "flag_id": "DEFAULT",
+        "cc": True,
+        "bcc": False,
+        "to_": False
+    },
+    {
+        "user_id": 0,
+        "dag_id": "BCG_Split",
+        "task_id": "partition_client_files",
+        "flag_id": "success",
+        "cc": False,
+        "bcc": False,
+        "to_": True
+    },
+    {
+        "user_id": 1,
+        "dag_id": "BCG_Split",
+        "task_id": "s3_upload_bcg",
+        "flag_id": "DEFAULT",
+        "cc": False,
+        "bcc": False,
+        "to_": True
+    },
+    {
+        "user_id": 2,
+        "dag_id": "BCG_Split",
+        "task_id": "notify_bcg_distribution_list",
+        "flag_id": "DEFAULT",
+        "cc": True,
+        "bcc": True,
+        "to_": False
     }
 ]
 
