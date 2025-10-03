@@ -4,7 +4,7 @@
 
 https://dynamic-email-operator-ui.onrender.com/
 
-Have fun exploring the hosted interface—both the Dash webapp and its backend run on Render. Any changes you make in the UI are saved in the shared database and persist beyond your browser.
+Have fun exploring the hosted interface—both the Dash webapp and its backend run on Render. Please mess around! Any changes you make in the UI are saved in the shared database and persist beyond your browser.
 
 A full-stack toolkit for managing email notifications in Apache Airflow without touching DAG code.
 
